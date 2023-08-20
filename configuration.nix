@@ -10,11 +10,23 @@
       ./hardware-configuration.nix
     ];
 
-  # Enable mounting ntfs partitions
+  # Enable mounting shared ntfs partitions
   boot.supportedFilesystems = ["ntfs" "fat32" "ext4"];
+  
+  # Prevent dual-boot to mess with clock
+  time.hardwareClockInLocalTime = true;
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = true;
+  # boot.loader.systemd-boot.enable = true; # working before  
+  # Use the grub (to keep Windows install) EFI boot loader.
+  boot.loader.timeout = 10;
+  boot.loader.grub = {
+	enable = true;
+	useOSProber = true;
+	device = "nodev"; 
+	efiSupport = true;
+	};
+
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "nixos"; # Define your hostname.

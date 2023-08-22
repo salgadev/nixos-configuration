@@ -10,6 +10,9 @@
       ./hardware-configuration.nix
     ];
 
+  # enable correct drivers for Vega 56 (Vega 10)
+  boot.initrd.kernelModules = [ "amdgpu" ];
+
   # Enable mounting shared ntfs partitions
   boot.supportedFilesystems = ["ntfs" "fat32" "ext4"];
   
@@ -25,9 +28,11 @@
 	useOSProber = true;
 	device = "nodev"; 
 	efiSupport = true;
+	configurationLimit = 25;
 	};
-
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.efi = {
+	canTouchEfiVariables = true;
+	};
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -46,14 +51,11 @@
   i18n.defaultLocale = "en_CA.UTF-8";
 
   # Enable the X11 windowing system.
-  services.xserver.enable = true;
-
-  # Enable the Budgie Desktop environment.
-  services.xserver.displayManager.lightdm.enable = true;
-  services.xserver.desktopManager.budgie.enable = true;
-
   # Configure keymap in X11
   services.xserver = {
+    enable = true;
+    displayManager.sddm.enable = true;
+    desktopManager.plasma5.enable = true;
     layout = "us";
     xkbVariant = "symbolic";
   };
@@ -78,13 +80,26 @@
     #media-session.enable = true;
   };
 
+  # Enable OpenCL with Radeon Open Compute (ROCm)
+  hardware.opengl.extraPackages = with pkgs; [
+	rocm-opencl-icd
+	rocm-opencl-runtime
+	amdvlk # Use AMD Vulkan drivers as needed
+  ];
+  
+  # Enable Vulkan/OpenGL
+  hardware.opengl.driSupport = true;
+  # For 32 bit applications
+  hardware.opengl.driSupport32Bit = true;
+
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.salgadev = {
     isNormalUser = true;
-    description = "salgadev";
+    home = "/home/salgadev";
+    description = "Carlos Salgado";
     # extraGroups = [ "networkmanager" "wheel" ]; # after graphical install
     extraGroups = [ "networkmanager" "wheel" "kvm" "input" "disk" "libvirtd" ]; # Enable ‘sudo’ for the user.
     packages = with pkgs; [     
@@ -97,27 +112,16 @@
 	celluloid
 	feh
 	flameshot
-	clang-tools_9
 	fontconfig
-	freetype
-	gcc
 	gh
 	git
-	gparted
 	kitty
 	pavucontrol
-	python3Minimal	
-	jetbrains.pycharm-community
-	stdenv
 	swaycons
-	terminus-nerdfont
 	tldr
-	trash-cli
 	unzip
 	variety
-	virt-manager
-	qemu
-    #  thunderbird
+	youtube-tui
     ];
   };
 
@@ -129,6 +133,13 @@
   environment.systemPackages = with pkgs; [
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #  wget
+	mpv
+	clinfo # verify OpenCL works
+  ];
+  
+  # Add HIP support
+  systemd.tmpfiles.rules = [
+    "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.hip}"
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

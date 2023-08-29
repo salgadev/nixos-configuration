@@ -107,21 +107,31 @@
 	neovim
         autojump
         starship
-        brave
-        librewolf       
+        brave       # private web browsing
+        librewolf   # much more private     
 	celluloid
 	feh
-	flameshot
-	fontconfig
-	gh
+	flameshot   # screenshots
+	fontconfig 
+	gh 	    # github login
 	git
-	kitty
+	kitty       # gpu-accelerated terminal
 	pavucontrol
 	swaycons
 	tldr
 	unzip
-	variety
-	youtube-tui
+	variety     # wallpapers
+	youtube-tui 
+	rar  
+	obs-studio  # screen recording	
+	libsForQt5.kdeconnect-kde # SmartPhone Integration
+	krusader # find duplicate files and more
+	protonvpn-gui
+	mailspring # easy sync with office365 
+	joplin-desktop # notetaking gui
+	discord
+	shotcut # video editing
+	gimp-with-plugins
     ];
   };
 

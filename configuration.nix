@@ -4,6 +4,7 @@
 
 { config, pkgs, ... }:
 
+
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -60,8 +61,14 @@
     xkbVariant = "symbolic";
   };
 
+  # Enable flatpaks 
+  services.flatpak.enable = true;
+  xdg.portal.extraPortals = [  pkgs.xdg-desktop-portal-gtk  ];
   # Enable CUPS to print documents.
-  services.printing.enable = true;
+  # services.printing.enable = true;
+  
+  # Try to automount HDDs  
+  services.udisks2.enable = true;
 
   # Enable sound with pipewire.
   sound.enable = true;
@@ -73,7 +80,7 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
+    jack.enable = true;  # suspect fixes bug when using headphones and shotcut
 
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
@@ -93,7 +100,7 @@
   hardware.opengl.driSupport32Bit = true;
 
   # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
+  # services.xserver.libinput.enable = true;  
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.salgadev = {
@@ -101,7 +108,7 @@
     home = "/home/salgadev";
     description = "Carlos Salgado";
     # extraGroups = [ "networkmanager" "wheel" ]; # after graphical install
-    extraGroups = [ "networkmanager" "wheel" "kvm" "input" "disk" "libvirtd" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "networkmanager" "wheel" "kvm" "input" "disk" "libvirtd" "storage"]; # Enable ‘sudo’ for the user.
     packages = with pkgs; [     
 	wget
 	neovim
@@ -129,8 +136,6 @@
 	protonvpn-gui
 	mailspring # easy sync with office365 
 	joplin-desktop # notetaking gui
-	discord
-	shotcut # video editing
 	gimp-with-plugins
     ];
   };
@@ -145,6 +150,7 @@
   #  wget
 	mpv
 	clinfo # verify OpenCL works
+	thefuck # fix mispelled commands
   ];
   
   # Add HIP support

@@ -2,10 +2,21 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+#{ config, pkgs, ... }:
 
+{ config, pkgs, lib, ... }:
+let
+  nix-software-center = import (pkgs.fetchFromGitHub {
+    owner = "vlinkz";
+    repo = "nix-software-center";
+    rev = "0.1.2";
+    sha256 = "xiqF1mP8wFubdsAQ1BmfjzCgOD3YZf7EGWl9i69FTls=";
+  }) {};
+
+in
 
 {
+
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -46,8 +57,6 @@
   time.timeZone = "America/Toronto";
   i18n.defaultLocale = "en_CA.UTF-8";
 
-  # Enable the X11 windowing system.
-  # Configure keymap in X11
   services.xserver = {
     enable = true;
     displayManager.sddm.enable = true;
@@ -64,10 +73,12 @@
     oxygen
     khelpcenter
     print-manager
+    gwenview
+    spectacle
+    elisa
   ];
 
-  services.gvfs.enable = true;    # drives for thunar
-  # services.tumbler.enable = true; # thumbnails # duplicate?
+  services.gvfs.enable = true;    
   
   services.flatpak.enable = true;  
   services.blueman.enable = true;
@@ -161,6 +172,7 @@
   };
   
   virtualisation = {
+    libvirtd.enable = true;
     podman = {
       enable = true;
       # Create a `docker` alias for podman,
@@ -172,12 +184,30 @@
     };
   };
 
+  programs.dconf = {
+    enable = true;
+  };
+
+  nixpkgs.config = {
+    # Allow proprietary packages
+    allowUnfree = true;
+
+    packageOverrides = pkgs: {
+      # Enable the NUR
+      nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
+        inherit pkgs;      
+      };    
+      unstable = import <nixos-unstable> { # pass the nixpkgs config to the unstable alias # to ensure `allowUnfree = true;` is propagated:
+      config = config.nixpkgs.config;
+      }; 
+    };
+  };
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.salgadev = {
     isNormalUser = true;
     home = "/home/salgadev";
     description = "Carlos Salgado";
-    # extraGroups = [ "networkmanager" "wheel" ]; # after graphical install
     extraGroups = [ "plasma" "networkmanager" "wheel" "kvm" "input" "disk" "libvirtd" "storage"	"video"]; 
     packages = with pkgs; [     
       wget
@@ -188,16 +218,11 @@
       librewolf   # much more private     
       ungoogled-chromium # for compatibility
       celluloid
-      feh
-      flameshot   # screenshots
-      fontconfig 
-      gh 	    # github login
+      gh          # github login
       git
       tldr
       variety     # wallpapers
-      youtube-tui 
       obs-studio  # screen recording	
-      libsForQt5.kdeconnect-kde # SmartPhone Integration
       krusader # find duplicate files and more
       protonvpn-gui
       mailspring # easy sync with office365 
@@ -207,20 +232,16 @@
       goverlay # gaming overlays
       openrgb-with-all-plugins 
       image-roll
+      
+      # Programming stuff
       jetbrains.pycharm-community
+      vscodium
       python311Packages.pydevd
     ];
   };
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
-  # Enable Nix User Repository
-  nixpkgs.config.packageOverrides = pkgs: {
-    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
-      inherit pkgs;
-    };
-  };
+  
+  # Required for flatpaks
+  fonts.fontDir.enable = true;
 
   fonts.fonts = with pkgs; [
     noto-fonts
@@ -236,26 +257,35 @@
     material-design-icons # for neofetch theme
     jetbrains-mono
     victor-mono
+    terminus-nerdfont
+    nixos-icons
+    zafiro-icons
   ];
   
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    waybar # hyprland starts - attempt at implementing https://github.com/SolDoesTech/HyprV4 
+    # Plenty of bug fixes in these "unstable" wayland releases
+    unstable.nwg-dock-hyprland
+    unstable.hyprland-autoname-workspaces
+    unstable.waybar # hyprland starts
+    unstable.rofi-wayland 
+    unstable.wl-clipboard
+    unstable.swww
+    unstable.xdg-utils
+    unstable.hyprpicker
     pulseaudio # needed for media commands
-    mako  
-    mpd # media playing daemon 
+    mako
+    mpd # media playing daemon
     polkit-kde-agent
     libnotify
-    kitty  
-    rofi-wayland 
-    networkmanagerapplet 
+    kitty
+    networkmanagerapplet
     jq
-    swww 
-    wayland-protocols # see if it helps with hdds
+    hyprland-protocols
     swaylock-effects
     wofi
-    wlogout 
+    wlogout
     swayidle
     swappy
     grim
@@ -267,33 +297,40 @@
     bluez
     bluez-tools
     blueman
+    blueberry
     gnome.file-roller
-    starship 
-    wl-clipboard
-    xdg-utils
-    xfce.xfce4-taskmanager 
+    starship
+    xfce.xfce4-taskmanager
     libsForQt5.sddm-kcm
     libsForQt5.kwallet-pam  # open wifi key on login
     kwalletcli # probably needed by polkit
-    nur.repos.alarsyo.sddm-sugar-candy  # hyprland ends
-    
+    nur.repos.alarsyo.sddm-sugar-candy
+    playerctl
+
+    nix-software-center
+
+    virt-manager
     wavpack # play wavs
     
+    fontconfig # helps flatpaks    
+    
     # trying out desktop apps
-    xplorer # modern 
     cinnamon.nemo-with-extensions # explorer
 
-    libsForQt5.kdenlive 
-    CuboCore.corepad
-    notepad-next
-    notepadqq
+    # Text editors
+    libsForQt5.kate
+    bluefish
+
     onlyoffice-bin
 
     # image viewers
     swayimg
 
     # document viewers
-    mate.atril # okular already installed    
+    mate.atril
+
+    # Other utilities
+    libsForQt5.kdeconnect-kde # SmartPhone Integration
 
     btop # system monitor
     killall 
@@ -305,9 +342,8 @@
     rar
     unzip
 
-    # xorg.xhost # possibly required by distrobox
-
-    nur.repos.nltch.spotify-adblock    # for installing spotify-adblock    
+    xorg.xhost # possibly required by distrobox
+    nur.repos.nltch.spotify-adblock
   ];
   
   # Add HIP support
@@ -347,7 +383,7 @@
   programs ={
     hyprland = {
       enable = true;
-      xwayland.enable = true;      
+      package = pkgs.unstable.hyprland;
     };
   };
 

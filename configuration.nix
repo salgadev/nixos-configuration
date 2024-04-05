@@ -388,6 +388,7 @@ in
         bbenoist.nix
         ms-azuretools.vscode-docker
         ms-vscode-remote.remote-ssh
+        yzhang.markdown-all-in-one
         formulahendry.code-runner
       ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
         {

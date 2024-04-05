@@ -1,0 +1,71 @@
+cpu:
+                       AMD Ryzen 7 2700 Eight-Core Processor, 3200 MHz
+                       AMD Ryzen 7 2700 Eight-Core Processor, 3566 MHz
+                       AMD Ryzen 7 2700 Eight-Core Processor, 2739 MHz
+                       AMD Ryzen 7 2700 Eight-Core Processor, 2742 MHz
+                       AMD Ryzen 7 2700 Eight-Core Processor, 3200 MHz
+                       AMD Ryzen 7 2700 Eight-Core Processor, 2908 MHz
+                       AMD Ryzen 7 2700 Eight-Core Processor, 2666 MHz
+                       AMD Ryzen 7 2700 Eight-Core Processor, 3200 MHz
+                       AMD Ryzen 7 2700 Eight-Core Processor, 3200 MHz
+                       AMD Ryzen 7 2700 Eight-Core Processor, 2957 MHz
+                       AMD Ryzen 7 2700 Eight-Core Processor, 3575 MHz
+                       AMD Ryzen 7 2700 Eight-Core Processor, 3200 MHz
+                       AMD Ryzen 7 2700 Eight-Core Processor, 3200 MHz
+                       AMD Ryzen 7 2700 Eight-Core Processor, 3200 MHz
+                       AMD Ryzen 7 2700 Eight-Core Processor, 3575 MHz
+                       AMD Ryzen 7 2700 Eight-Core Processor, 3200 MHz
+graphics card:
+                       ATI Vega 10 XL/XT [Radeon RX Vega 56/64]
+sound:
+                       AMD Family 17h (Models 00h-0fh) HD Audio Controller
+                       ATI Vega 10 HDMI Audio [Radeon Vega 56/64]
+storage:
+                       Micron/Crucial P1 NVMe PCIe SSD
+                       Micron/Crucial P1 NVMe PCIe SSD
+                       AMD FCH SATA Controller [AHCI mode]
+                       AMD 400 Series Chipset SATA Controller
+network:
+  enp7s0               Intel I211 Gigabit Network Connection
+  wlp6s0               Intel Wireless-AC 9260
+usb controller:
+                       ASMedia ASM1143 USB 3.1 Host Controller
+                       AMD USB Controller
+                       AMD Zeppelin USB 3.0 Host controller
+bridge:
+                       AMD 400 Series Chipset PCIe Port
+                       AMD Family 17h (Models 00h-0fh) PCIe GPP Bridge
+                       AMD Family 17h (Models 00h-1fh) PCIe Dummy Host Bridge
+                       AMD Family 17h (Models 00h-0fh) Data Fabric: Device 18h; Function 3
+                       AMD 400 Series Chipset PCIe Bridge
+                       AMD 400 Series Chipset PCIe Port
+                       AMD Family 17h (Models 00h-0fh) Data Fabric: Device 18h; Function 1
+                       AMD Family 17h (Models 00h-1fh) PCIe Dummy Host Bridge
+                       AMD Vega 10 PCIe Bridge
+                       AMD Family 17h (Models 00h-1fh) PCIe Dummy Host Bridge
+                       AMD 400 Series Chipset PCIe Port
+                       AMD FCH LPC Bridge
+                       AMD Vega 10 PCIe Bridge
+                       AMD Family 17h (Models 00h-1fh) PCIe Dummy Host Bridge
+                       AMD 400 Series Chipset PCIe Port
+                       AMD Family 17h (Models 00h-0fh) Data Fabric: Device 18h; Function 6
+                       AMD Family 17h (Models 00h-0fh) Root Complex
+                       AMD Family 17h (Models 00h-0fh) Internal PCIe GPP Bridge 0 to Bus B
+                       AMD Family 17h (Models 00h-0fh) Data Fabric: Device 18h; Function 4
+                       AMD Family 17h (Models 00h-0fh) PCIe GPP Bridge
+                       AMD Family 17h (Models 00h-1fh) PCIe Dummy Host Bridge
+                       AMD Family 17h (Models 00h-0fh) Data Fabric: Device 18h; Function 2
+                       AMD Family 17h (Models 00h-0fh) PCIe GPP Bridge
+                       AMD 400 Series Chipset PCIe Port
+                       AMD Family 17h (Models 00h-0fh) Data Fabric: Device 18h; Function 0
+                       AMD 400 Series Chipset PCIe Port
+                       AMD Family 17h (Models 00h-0fh) Internal PCIe GPP Bridge 0 to Bus B
+                       AMD Family 17h (Models 00h-1fh) PCIe Dummy Host Bridge
+                       AMD Family 17h (Models 00h-0fh) Data Fabric: Device 18h; Function 7
+                       AMD Family 17h (Models 00h-0fh) Data Fabric: Device 18h; Function 5
+unknown:
+                       AMD Family 17h (Models 00h-0fh) I/O Memory Management Unit
+                       AMD Zeppelin/Renoir PCIe Dummy Function
+                       AMD Family 17h (Models 00h-0fh) Platform Security Processor
+                       AMD Zeppelin/Raven/Raven2 PCIe Dummy Function
+                       AMD FCH SMBus Controller

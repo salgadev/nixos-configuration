@@ -22,6 +22,15 @@ in
       ./hardware-configuration.nix
     ];
 
+  # Use latest LTS kernel
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  # CPU scaling driver
+  boot.kernelModules = [ "amd-pstate" ];
+  boot.kernelParams = [ 
+    "amd_pstate=active"
+  ];
+
   # enable correct drivers for Vega 56 (Vega 10)
   boot.initrd.kernelModules = [ "amdgpu" ];
 
@@ -45,6 +54,25 @@ in
   boot.loader.efi = {
 	canTouchEfiVariables = true;
 	};
+  
+  # Mount shared HDD
+  fileSystems."/mnt/data" = {
+    device = "/dev/sda2";
+    fsType = "ntfs";
+    options = [ "defaults" ];
+  };
+  # Gaming partition
+  #fileSystems."/mnt/games" = {
+  #  device = "/dev/nvme1n1p2";
+  #  fsType = "ntfs";
+  #  options = [ "defaults" ];
+  #};
+  # Windows Partition
+  #fileSystems."/mnt/win10" = {
+  #  device = "/dev/nvme0n1p4";
+  #  fsType = "ntfs";
+  #  options = [ "defaults" ];
+  #};
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -56,6 +84,15 @@ in
   networking.networkmanager.enable = true;
   time.timeZone = "America/Toronto";
   i18n.defaultLocale = "en_CA.UTF-8";
+  
+  nix.optimise.automatic = true;
+  nix.gc = {
+    automatic = true;
+    dates = "daily";
+    options = "--delete-older-than 15d";
+  };
+
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   services.xserver = {
     enable = true;
@@ -76,26 +113,34 @@ in
     gwenview
     spectacle
     elisa
+    kwrited
   ];
+    
+  services = {
+    # Makes communicating between packages easier  
+    dbus.enable = true; 
 
-  services.gvfs.enable = true;    
+    # Automount / Search HDDs
+    gvfs.enable = true;
+    udisks2.enable = true;  
+    devmon.enable = true;
+    
+    # bluetooth  
+    blueman.enable = true;
+
+    # Thumbnails
+    tumbler.enable = true;  
+
+    flatpak.enable = true;
+  };
   
-  services.flatpak.enable = true;  
-  services.blueman.enable = true;
-
-  # Makes communicating between packages easier  
-  services.dbus.enable = true; 
 
   # enable desktop portal
   xdg.portal = {
     enable = true;
     wlr.enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
+#    extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
   };
-  
-  # Possible requirement to search on HDDs  
-  services.udisks2.enable = true;
-  services.udisks2.mountOnMedia = true;
 
   sound.enable = true;
   security.rtkit.enable = true;
@@ -105,7 +150,7 @@ in
     alsa.support32Bit = true;
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
-    jack.enable = true;  # suspect fixes bug when using headphones and shotcut
+    # jack.enable = true;  # suspect fixes bug when using headphones and shotcut
 
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
@@ -118,19 +163,18 @@ in
     };
 
   services.mpd = {
-  enable = true;
-  musicDirectory = "/usr/share/music";
-  extraConfig = ''
-    audio_output {
-      type "pulse"
-      name "PulSonido"
-      server "127.0.0.1" # must connect to the local sound server
+    enable = true;
+    musicDirectory = "/home/salgadev/Music";
+    extraConfig = ''
+      audio_output {
+        type "pulse"
+        name "PulSonido"
+        server "127.0.0.1" # must connect to the local sound server
     } 
-  '';
-
-  # Optional:
-  network.listenAddress = "any"; # if you want to allow non-localhost connections
-  startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
+    '';
+    # Optional:
+    network.listenAddress = "any"; # if you want to allow non-localhost connections
+    startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
   };
   
   # enable and configure polkit to automount drives
@@ -164,6 +208,8 @@ in
         rocm-opencl-icd
         rocm-opencl-runtime
         amdvlk # Use AMD Vulkan drivers as needed
+	vaapiVdpau
+        libvdpau-va-gl
       ];
       driSupport = true;    
       driSupport32Bit = true;
@@ -184,10 +230,6 @@ in
     };
   };
 
-  programs.dconf = {
-    enable = true;
-  };
-
   nixpkgs.config = {
     # Allow proprietary packages
     allowUnfree = true;
@@ -197,9 +239,9 @@ in
       nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
         inherit pkgs;      
       };    
-      unstable = import <nixos-unstable> { # pass the nixpkgs config to the unstable alias # to ensure `allowUnfree = true;` is propagated:
-      config = config.nixpkgs.config;
-      }; 
+      #unstable = import <nixos-unstable> { # pass the nixpkgs config to the unstable alias # to ensure `allowUnfree = true;` is propagated:
+      #config = config.nixpkgs.config;
+      #}; 
     };
   };
 
@@ -214,36 +256,40 @@ in
       neovim
       neofetch
       autojump
-      brave       # private web browsing
-      librewolf   # much more private     
-      ungoogled-chromium # for compatibility
-      celluloid
       gh          # github login
       git
       tldr
       variety     # wallpapers
       obs-studio  # screen recording	
       krusader # find duplicate files and more
-      protonvpn-gui
-      mailspring # easy sync with office365 
+      betterbird # email
       joplin-desktop # notetaking gui
-      gimp-with-plugins
-      podman # handle containers, works with docker commands
-      goverlay # gaming overlays
-      openrgb-with-all-plugins 
+      libsForQt5.kate # text editor
+      libsForQt5.kparts # kate plugins, TBC it works
+      apostrophe # Markdown editor
+      # gimp-with-plugins # breaking as of march
       image-roll
-      
-      # Programming stuff
-      jetbrains.pycharm-community
-      vscodium
-      python311Packages.pydevd
+      freeoffice
+      rclone
+      rclone-browser
+
+      # browsers 
+      brave       # private web browsing
+      librewolf   # much more private     
+      ungoogled-chromium # for compatibility
+
+      # media
+      qmplay2
+
+      distrobox
+      podman-desktop
     ];
   };
   
   # Required for flatpaks
   fonts.fontDir.enable = true;
 
-  fonts.fonts = with pkgs; [
+  fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-cjk
     noto-fonts-emoji
@@ -264,19 +310,21 @@ in
   
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    # Plenty of bug fixes in these "unstable" wayland releases
-    unstable.nwg-dock-hyprland
-    unstable.hyprland-autoname-workspaces
-    unstable.waybar # hyprland starts
-    unstable.rofi-wayland 
-    unstable.wl-clipboard
-    unstable.swww
-    unstable.xdg-utils
-    unstable.hyprpicker
+   
+  environment.systemPackages = with pkgs; [     
+    waybar # hyprland starts
+    hyprland-autoname-workspaces
+    rofi-wayland 
+    wl-clipboard
+    swww
+    xdg-utils
+    hyprpicker
+    grim
+    wf-recorder
+    cliphist
     pulseaudio # needed for media commands
     mako
-    mpd # media playing daemon
+    haruna # video player 
     polkit-kde-agent
     libnotify
     kitty
@@ -288,40 +336,24 @@ in
     wlogout
     swayidle
     swappy
-    grim
-    slurp
-    python3Minimal
-    python311Packages.requests_ntlm
+    slurp    
     pamixer
     pavucontrol
     bluez
-    bluez-tools
-    blueman
-    blueberry
+    bluez-tools    
     gnome.file-roller
     starship
+    gdu
+    ncdu
     xfce.xfce4-taskmanager
     libsForQt5.sddm-kcm
     libsForQt5.kwallet-pam  # open wifi key on login
     kwalletcli # probably needed by polkit
     nur.repos.alarsyo.sddm-sugar-candy
-    playerctl
-
-    nix-software-center
-
-    virt-manager
-    wavpack # play wavs
     
-    fontconfig # helps flatpaks    
-    
-    # trying out desktop apps
-    cinnamon.nemo-with-extensions # explorer
-
-    # Text editors
-    libsForQt5.kate
-    bluefish
-
-    onlyoffice-bin
+    playerctl # media
+    wavpack # play wavs    
+    fontconfig # helps flatpaks
 
     # image viewers
     swayimg
@@ -330,10 +362,10 @@ in
     mate.atril
 
     # Other utilities
+    killall
     libsForQt5.kdeconnect-kde # SmartPhone Integration
 
     btop # system monitor
-    killall 
     contour # modern terminal 
 
     pfetch # fast flex fetch
@@ -341,14 +373,36 @@ in
 
     rar
     unzip
+    xarchiver
 
     xorg.xhost # possibly required by distrobox
     nur.repos.nltch.spotify-adblock
+    
+    jetbrains.pycharm-community
+    spyder
+    chntpw
+    (vscode-with-extensions.override {
+      vscode = vscodium;
+      vscodeExtensions = with vscode-extensions; [
+        ms-vscode-remote.remote-containers
+        bbenoist.nix
+        ms-azuretools.vscode-docker
+        ms-vscode-remote.remote-ssh
+        formulahendry.code-runner
+      ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+        {
+          name = "remote-ssh-edit";
+          publisher = "ms-vscode-remote";
+	  version = "0.47.2";
+	  sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
+	}        
+      ];
+    })
   ];
   
   # Add HIP support
   systemd.tmpfiles.rules = [
-    "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.hip}"
+    "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.rocmPackages.clr}"
   ];
 
   # Start polkit-kde as a systemd service
@@ -375,15 +429,34 @@ in
   #   enable = true;
   #   enableSSHSupport = true;
   # };
+
+  # helps pipewire
+  programs.direnv.enable = true;
+  programs.dconf.enable = true; 
+  programs.virt-manager.enable = true;
+
+  # Enable thunar preferences
+  programs.xfconf.enable = true;
+
+  # Helps VSCodium
+  programs.nix-ld.enable = true;
   
-  # flex on terminal launch
-  programs.bash.shellInit = "pfetch";
+  # flex
+  environment.shellInit = "pfetch";
 
   # Hyprland 
   programs ={
+    xwayland.enable = true;
     hyprland = {
       enable = true;
-      package = pkgs.unstable.hyprland;
+      #package = pkgs.unstable.hyprland;
+    };
+    thunar = {
+      enable = true;
+      plugins = with pkgs.xfce; [
+        thunar-archive-plugin
+        thunar-volman
+      ];
     };
   };
 

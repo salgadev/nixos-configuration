@@ -13,5 +13,6 @@ export GEN_NAME='{CHOOSE A GENERATION NAME}'
 and then rebuild with
 
 ```
-sudo nixos-rebuild switch -I nixos-config=~/nixos-configuration/configuration.nix -p $GEN_NAME
+sudo nixos-rebuild switch -I nixos-config=./configuration.nix -p $GEN_NAME
 ```
+

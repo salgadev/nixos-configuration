@@ -97,11 +97,13 @@ in
   services.xserver = {
     enable = true;
     displayManager.sddm.enable = true;
-    desktopManager.plasma5.enable = true;
-    layout = "us";
-    xkbModel = "logitech_base";
-    xkbVariant = "altgr-intl";
-    xkbOptions = "compose:ralt";
+    desktopManager.plasma5.enable = true;    
+    xkb = {
+      layout = "us";
+      model = "logitech_base";
+      variant = "altgr-intl";
+      options = "compose:ralt";
+    };    
   };
   
   # Plasma 5 Exclusions
@@ -374,6 +376,7 @@ in
     rar
     unzip
     xarchiver
+    figma-linux
 
     xorg.xhost # possibly required by distrobox
     nur.repos.nltch.spotify-adblock

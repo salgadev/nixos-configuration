@@ -2,19 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-#{ config, pkgs, ... }:
-
-{ config, pkgs, lib, ... }:
-let
-  nix-software-center = import (pkgs.fetchFromGitHub {
-    owner = "vlinkz";
-    repo = "nix-software-center";
-    rev = "0.1.2";
-    sha256 = "xiqF1mP8wFubdsAQ1BmfjzCgOD3YZf7EGWl9i69FTls=";
-  }) {};
-
-in
-
+{ config, pkgs, ... }:
 {
 
   imports =
@@ -285,6 +273,7 @@ in
 
       distrobox
       podman-desktop
+      element-desktop
     ];
   };
   

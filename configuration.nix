@@ -301,6 +301,8 @@
     terminus-nerdfont
     nixos-icons
     zafiro-icons
+    merriweather
+    merriweather-sans
   ];
   
   # List packages installed in system profile. To search, run:

@@ -271,9 +271,13 @@
       # media
       qmplay2
 
-      distrobox
-      podman-desktop
+      distrobox      
+      toolbox
+
       element-desktop
+      notesnook
+      anytype
+
     ];
   };
   
@@ -365,7 +369,6 @@
     rar
     unzip
     xarchiver
-    figma-linux
 
     xorg.xhost # possibly required by distrobox
     nur.repos.nltch.spotify-adblock

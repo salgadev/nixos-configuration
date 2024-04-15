@@ -376,24 +376,36 @@
     nur.repos.nltch.spotify-adblock
     
     jetbrains.pycharm-community
-    spyder
     chntpw
     (vscode-with-extensions.override {
       vscode = vscodium;
       vscodeExtensions = with vscode-extensions; [
-        ms-vscode-remote.remote-containers
+        # python
+        ms-python.vscode-pylance
+        ms-python.black-formatter       
+
+        # nix
         bbenoist.nix
-        ms-azuretools.vscode-docker
-        ms-vscode-remote.remote-ssh
+        kamadorueda.alejandra
+        jnoortheen.nix-ide
+
+        # general purpose
+        usernamehw.errorlens
         yzhang.markdown-all-in-one
         formulahendry.code-runner
+
+        # remotes
+        ms-azuretools.vscode-docker        
+        ms-vscode-remote.remote-containers
+        ms-vscode-remote.remote-ssh        
+        
       ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
         {
           name = "remote-ssh-edit";
           publisher = "ms-vscode-remote";
-	  version = "0.47.2";
-	  sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
-	}        
+	        version = "0.47.2";
+	        sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
+	      }        
       ];
     })
   ];

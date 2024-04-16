@@ -371,6 +371,7 @@
     rar
     unzip
     xarchiver
+    alejandra
 
     xorg.xhost # possibly required by distrobox
     nur.repos.nltch.spotify-adblock
@@ -405,7 +406,13 @@
           publisher = "ms-vscode-remote";
 	        version = "0.47.2";
 	        sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
-	      }        
+	      }
+        {        
+          name = "python";
+          publisher = "ms-python";
+          version = "2024.5.11021008";
+          sha256 = "52723495e44aa82b452c17464bf52f2ee09cc508626f26340a19b343dbb2b686";          
+        }
       ];
     })
   ];

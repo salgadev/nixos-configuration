@@ -384,6 +384,7 @@
         # python
         ms-python.vscode-pylance
         ms-python.black-formatter       
+        ms-toolsai.jupyter
 
         # nix
         bbenoist.nix
@@ -398,7 +399,7 @@
         # remotes
         ms-azuretools.vscode-docker        
         ms-vscode-remote.remote-containers
-        ms-vscode-remote.remote-ssh        
+        ms-vscode-remote.remote-ssh                
         
       ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
         {

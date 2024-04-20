@@ -385,7 +385,11 @@
         ms-python.vscode-pylance
         ms-python.black-formatter       
         ms-toolsai.jupyter
-
+        ms-toolsai.jupyter-renderers
+        ms-toolsai.vscode-jupyter-cell-tags
+        ms-toolsai.jupyter-keymap
+        ms-toolsai.vscode-jupyter-slideshow
+        
         # nix
         bbenoist.nix
         kamadorueda.alejandra

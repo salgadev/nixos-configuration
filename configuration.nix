@@ -242,7 +242,7 @@
     description = "Carlos Salgado";
     extraGroups = [ "plasma" "networkmanager" "wheel" "kvm" "input" "disk" "libvirtd" "storage"	"video"]; 
     packages = with pkgs; [     
-      wget
+      wget      
       neovim
       neofetch
       autojump
@@ -255,10 +255,10 @@
       betterbird # email
       joplin-desktop # notetaking gui
       libsForQt5.kate # text editor
-      libsForQt5.kparts # kate plugins, TBC it works
       apostrophe # Markdown editor
-      # gimp-with-plugins # breaking as of march
-      image-roll
+      #gimp-with-plugins # breaking as of march
+      krita
+      # image-roll use swayimg instead
       freeoffice
       rclone
       rclone-browser
@@ -275,9 +275,7 @@
       toolbox
 
       element-desktop
-      notesnook
       anytype
-
     ];
   };
   
@@ -309,54 +307,63 @@
   # $ nix search wget
    
   environment.systemPackages = with pkgs; [     
-    waybar # hyprland starts
+    # hyprland requirements
+    waybar
     hyprland-autoname-workspaces
-    rofi-wayland 
-    wl-clipboard
+    hyprland-protocols
+    rofi-wayland
+    mako
     swww
     xdg-utils
     hyprpicker
-    grim
     wf-recorder
-    cliphist
-    pulseaudio # needed for media commands
-    mako
-    haruna # video player 
     polkit-kde-agent
     libnotify
     kitty
     networkmanagerapplet
     jq
-    hyprland-protocols
+    swappy
+    slurp
+    grim
+    cliphist
+    wl-clipboard
+
+    # screenlock
     swaylock-effects
-    wofi
     wlogout
     swayidle
-    swappy
-    slurp    
+    hypridle
+    hyprlock
+
+    # audio/media commands
+    pulseaudio 
     pamixer
     pavucontrol
+
+    # bluetooth
     bluez
-    bluez-tools    
-    gnome.file-roller
+    bluez-tools
     starship
     gdu
     ncdu
     xfce.xfce4-taskmanager
+    cinnamon.nemo-with-extensions
     libsForQt5.sddm-kcm
     libsForQt5.kwallet-pam  # open wifi key on login
     kwalletcli # probably needed by polkit
     nur.repos.alarsyo.sddm-sugar-candy
     
+    haruna # video player 
     playerctl # media
-    wavpack # play wavs    
+    wavpack # play wavs   
+    nur.repos.nltch.spotify-adblock
+
     fontconfig # helps flatpaks
-
-    # image viewers
-    swayimg
-
-    # document viewers
-    mate.atril
+    
+    baobab # storage visualizer
+    swayimg # image viewer
+    
+    mate.atril # document viewers
 
     # Other utilities
     killall
@@ -369,15 +376,13 @@
     clinfo # verify OpenCL works
 
     rar
-    unzip
-    xarchiver
     alejandra
 
-    xorg.xhost # possibly required by distrobox
-    nur.repos.nltch.spotify-adblock
-    
+    xorg.xhost # possibly required by distrobox    
+        
+    chntpw # fix windows registrt util
+
     jetbrains.pycharm-community
-    chntpw
     (vscode-with-extensions.override {
       vscode = vscodium;
       vscodeExtensions = with vscode-extensions; [

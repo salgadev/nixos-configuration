@@ -400,10 +400,12 @@
         kamadorueda.alejandra
         jnoortheen.nix-ide
 
-        # general purpose
-        usernamehw.errorlens
+        # markdown
         yzhang.markdown-all-in-one
-        formulahendry.code-runner
+        bierner.markdown-mermaid
+        
+        # misc
+        usernamehw.errorlens        
 
         # remotes
         ms-azuretools.vscode-docker        

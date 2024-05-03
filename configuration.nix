@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      <home-manager/nixos>
     ];
 
   # Use latest LTS kernel
@@ -77,21 +78,16 @@
   nix.gc = {
     automatic = true;
     dates = "daily";
-    options = "--delete-older-than 15d";
+    options = "--delete-older-than 7d";
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  services.xserver = {
-    enable = true;
-    displayManager.sddm.enable = true;
-    desktopManager.plasma5.enable = true;    
-    xkb = {
-      layout = "us";
-      model = "logitech_base";
-      variant = "altgr-intl";
-      options = "compose:ralt";
-    };    
+  services.displayManager = {    
+    sddm = {      
+      enable = true;  
+      wayland.enable = true;
+      };
   };
   
   # Plasma 5 Exclusions
@@ -236,6 +232,16 @@
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
+  home-manager = {
+    useGlobalPkgs = true;
+    users.salgadev = { pkgs, ... }: {      
+      programs.bash.enable = true;
+      home.stateVersion = "23.11";
+
+      home.packages = [ pkgs.atool pkgs.httpie ];
+    };
+  };
+
   users.users.salgadev = {
     isNormalUser = true;
     home = "/home/salgadev";

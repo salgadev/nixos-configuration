@@ -3,12 +3,14 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
+let
+  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/master.tar.gz";
+in
 {
 
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      <home-manager/nixos>
+  imports = [ 
+      ./hardware-configuration.nix # must have
+      (import "${home-manager}/nixos")
     ];
 
   # Use latest LTS kernel
@@ -82,7 +84,9 @@
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
+  
+  services.gnome.sushi.enable = true; # for nemo
+  
   services.displayManager = {    
     sddm = {      
       enable = true;  
@@ -177,13 +181,15 @@
     '';
   };
 
-  # auto connect to wifi on wayland
-  security.pam.mount.enable = true; # should mount on login
-  security.pam.services = {
-    sddm.enableKwallet = true;
-    swaylock.text = ''
-      auth include login
-      '';
+  # auto connect to wifi on wayland  
+  security.pam = {
+    mount.enable = true; # should mount on login
+    services = {
+      sddm.enableKwallet = true;
+      swaylock.text = ''
+        auth include login
+        '';
+    };
   };
 
   # Enable OpenCL with Radeon Open Compute (ROCm)
@@ -236,8 +242,7 @@
     useGlobalPkgs = true;
     users.salgadev = { pkgs, ... }: {      
       programs.bash.enable = true;
-      home.stateVersion = "23.11";
-
+      home.stateVersion = "24.05";
       home.packages = [ pkgs.atool pkgs.httpie ];
     };
   };
@@ -249,8 +254,6 @@
     extraGroups = [ "plasma" "networkmanager" "wheel" "kvm" "input" "disk" "libvirtd" "storage"	"video"]; 
     packages = with pkgs; [     
       wget      
-      neovim
-      neofetch
       autojump
       gh          # github login
       git
@@ -261,27 +264,21 @@
       betterbird # email
       joplin-desktop # notetaking gui
       libsForQt5.kate # text editor
-      apostrophe # Markdown editor
-      #gimp-with-plugins # breaking as of march
-      krita
-      # image-roll use swayimg instead
+      apostrophe # Markdown editor      
+      krita      
       freeoffice
       rclone
       rclone-browser
+      # design apps
+      # gimp-with-plugins 
+      # inkscape-with-extensions
 
       # browsers 
       brave       # private web browsing
-      librewolf   # much more private     
       ungoogled-chromium # for compatibility
 
       # media
       qmplay2
-
-      distrobox      
-      toolbox
-
-      element-desktop
-      anytype
     ];
   };
   
@@ -353,11 +350,17 @@
     gdu
     ncdu
     xfce.xfce4-taskmanager
+
+    # Nemo File Manager
     cinnamon.nemo-with-extensions
+    cinnamon.nemo-fileroller
+    cinnamon.nemo-python
+    cinnamon.folder-color-switcher
+    nemo-qml-plugin-dbus
+
     libsForQt5.sddm-kcm
     libsForQt5.kwallet-pam  # open wifi key on login
     kwalletcli # probably needed by polkit
-    nur.repos.alarsyo.sddm-sugar-candy
     
     haruna # video player 
     playerctl # media
@@ -376,13 +379,15 @@
     libsForQt5.kdeconnect-kde # SmartPhone Integration
 
     btop # system monitor
-    contour # modern terminal 
 
     pfetch # fast flex fetch
     clinfo # verify OpenCL works
 
     rar
     alejandra
+
+    # icons
+    papirus-icon-theme
 
     xorg.xhost # possibly required by distrobox    
         
@@ -464,17 +469,13 @@
   #   enable = true;
   #   enableSSHSupport = true;
   # };
-
-  # helps pipewire
-  programs.direnv.enable = true;
-  programs.dconf.enable = true; 
-  programs.virt-manager.enable = true;
-
-  # Enable thunar preferences
-  programs.xfconf.enable = true;
-
-  # Helps VSCodium
-  programs.nix-ld.enable = true;
+  
+  programs = {    
+    direnv.enable = true;
+    dconf.enable = true; 
+    virt-manager.enable = true;    
+    nix-ld.enable = true; # Helps VSCodium
+  };
   
   # flex
   environment.shellInit = "pfetch";

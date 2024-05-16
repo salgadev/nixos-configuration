@@ -3,14 +3,10 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
-let
-  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/master.tar.gz";
-in
 {
 
   imports = [ 
-      ./hardware-configuration.nix # must have
-      (import "${home-manager}/nixos")
+      ./hardware-configuration.nix # must have      
     ];
 
   # Use latest LTS kernel
@@ -226,27 +222,18 @@ in
     # Allow proprietary packages
     allowUnfree = true;
 
+    # Seems spotify is dead/broken today
+    /*
     packageOverrides = pkgs: {
       # Enable the NUR
       nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
         inherit pkgs;      
-      };    
-      #unstable = import <nixos-unstable> { # pass the nixpkgs config to the unstable alias # to ensure `allowUnfree = true;` is propagated:
-      #config = config.nixpkgs.config;
-      #}; 
+      };          
     };
+    */
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  home-manager = {
-    useGlobalPkgs = true;
-    users.salgadev = { pkgs, ... }: {      
-      programs.bash.enable = true;
-      home.stateVersion = "24.05";
-      home.packages = [ pkgs.atool pkgs.httpie ];
-    };
-  };
-
   users.users.salgadev = {
     isNormalUser = true;
     home = "/home/salgadev";
@@ -265,7 +252,6 @@ in
       joplin-desktop # notetaking gui
       libsForQt5.kate # text editor
       apostrophe # Markdown editor      
-      krita      
       freeoffice
       rclone
       rclone-browser
@@ -321,6 +307,7 @@ in
     hyprpicker
     wf-recorder
     polkit-kde-agent
+    polkit_gnome
     libnotify
     kitty
     networkmanagerapplet
@@ -365,7 +352,7 @@ in
     haruna # video player 
     playerctl # media
     wavpack # play wavs   
-    nur.repos.nltch.spotify-adblock
+    #nur.repos.nltch.spotify-adblock
 
     fontconfig # helps flatpaks
     

@@ -10,14 +10,14 @@ Choose a name for your generation
 export GEN_NAME='{CHOOSE A GENERATION NAME}'
 ```
 
-Rebuild using the new flake 
-
-```
-sudo nixos-rebuild --flake .#nixos switch --upgrade -p $GEN_NAME
-```
-
-Or ignore the flake and rebuild monolithically: 
+If you want to ignore the flake and rebuild monolithically: 
 
 ```
 sudo nixos-rebuild switch -I nixos-config=./configuration.nix -p $GEN_NAME
+```
+
+Rebuild using the new flake (Recommended)
+
+```
+sudo nixos-rebuild --flake .#nixos switch --upgrade -p $GEN_NAME
 ```

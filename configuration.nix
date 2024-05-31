@@ -81,26 +81,18 @@
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   
-  services.gnome.sushi.enable = true; # for nemo
-  
-  services.displayManager = {    
+  services.gnome.sushi.enable = true; # for nemo  
+  services.displayManager = {        
     sddm = {      
       enable = true;  
       wayland.enable = true;
+      theme = "catppuccin-sddm-corners";
+      package = pkgs.kdePackages.sddm;
       };
   };
   
-  # Plasma 5 Exclusions
-  environment.plasma5.excludePackages = with pkgs.libsForQt5; [
-    okular
-    oxygen
-    khelpcenter
-    print-manager
-    gwenview
-    spectacle
-    elisa
-    kwrited
-  ];
+  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
+  stylix.image = ./bg.png;
     
   services = {
     # Makes communicating between packages easier  
@@ -223,14 +215,14 @@
     allowUnfree = true;
 
     # Seems spotify is dead/broken today
-    /*
+    
     packageOverrides = pkgs: {
       # Enable the NUR
       nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
-        inherit pkgs;      
-      };          
+        inherit pkgs;
+      };
     };
-    */
+    
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -255,6 +247,8 @@
       freeoffice
       rclone
       rclone-browser
+      keepassxc
+      codeql
       # design apps
       # gimp-with-plugins 
       # inkscape-with-extensions
@@ -264,6 +258,7 @@
       ungoogled-chromium # for compatibility
 
       # media
+      mpv
       qmplay2
     ];
   };
@@ -317,6 +312,7 @@
     grim
     cliphist
     wl-clipboard
+    catppuccin-sddm-corners    
 
     # screenlock
     swaylock-effects
@@ -349,7 +345,6 @@
     libsForQt5.kwallet-pam  # open wifi key on login
     kwalletcli # probably needed by polkit
     
-    haruna # video player 
     playerctl # media
     wavpack # play wavs   
     #nur.repos.nltch.spotify-adblock
@@ -380,7 +375,6 @@
         
     chntpw # fix windows registrt util
 
-    jetbrains.pycharm-community
     (vscode-with-extensions.override {
       vscode = vscodium;
       vscodeExtensions = with vscode-extensions; [
@@ -457,23 +451,26 @@
   #   enableSSHSupport = true;
   # };
   
-  programs = {    
-    direnv.enable = true;
-    dconf.enable = true; 
-    virt-manager.enable = true;    
-    nix-ld.enable = true; # Helps VSCodium
-  };
-  
+    
   # flex
   environment.shellInit = "pfetch";
-
-  # Hyprland 
+  
   programs ={
+    # Window managers    
+    sway = {
+      enable = true;
+      wrapperFeatures.gtk = true;
+      package = pkgs.swayfx;
+    };
     xwayland.enable = true;
     hyprland = {
       enable = true;
       #package = pkgs.unstable.hyprland;
     };
+    direnv.enable = true;
+    dconf.enable = true; 
+    virt-manager.enable = true;    
+    nix-ld.enable = true; # Helps VSCodium
     thunar = {
       enable = true;
       plugins = with pkgs.xfce; [

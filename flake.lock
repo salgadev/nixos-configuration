@@ -130,6 +130,27 @@
         "type": "github"
       }
     },
+    "flake-parts": {
+      "inputs": {
+        "nixpkgs-lib": [
+          "walker",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1709336216,
+        "narHash": "sha256-Dt/wOWeW6Sqm11Yh+2+t0dfEWxoMxGBvv3JpIocFl9E=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "f7b3c975cf067e56e7cda6cb098ebe3fb4d74ca2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
     "fromYaml": {
       "flake": false,
       "locked": {
@@ -216,10 +237,27 @@
         "type": "github"
       }
     },
+    "nixpkgs_3": {
+      "locked": {
+        "lastModified": 1710451336,
+        "narHash": "sha256-pP86Pcfu3BrAvRO7R64x7hs+GaQrjFes+mEPowCfkxY=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "d691274a972b3165335d261cc4671335f5c67de9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "nixpkgs": "nixpkgs",
-        "stylix": "stylix"
+        "stylix": "stylix",
+        "walker": "walker"
       }
     },
     "stylix": {
@@ -237,16 +275,35 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1716206302,
-        "narHash": "sha256-5Qc3aQGVyPEOuN82zVamStaV81HebHvLjk3fGfpyCPY=",
+        "lastModified": 1718122552,
+        "narHash": "sha256-A+dBkSwp8ssHKV/WyXb9uqIYrHBqHvtSedU24Lq9lqw=",
         "owner": "danth",
         "repo": "stylix",
-        "rev": "81df8443556335016d6f0bc22630a95776a56d8b",
+        "rev": "e59d2c1725b237c362e4a62f5722f5b268d566c7",
         "type": "github"
       },
       "original": {
         "owner": "danth",
         "repo": "stylix",
+        "type": "github"
+      }
+    },
+    "walker": {
+      "inputs": {
+        "flake-parts": "flake-parts",
+        "nixpkgs": "nixpkgs_3"
+      },
+      "locked": {
+        "lastModified": 1718041172,
+        "narHash": "sha256-HBAoLx2YZtvv6jBMnwFVuMPIRZtPx0Gkd4u9kgAgYuQ=",
+        "owner": "abenz1267",
+        "repo": "walker",
+        "rev": "59c2a839e5c21bb715c71e2b17d0bdc65dfe9a5d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "abenz1267",
+        "repo": "walker",
         "type": "github"
       }
     }

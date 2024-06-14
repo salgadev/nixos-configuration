@@ -1,52 +1,53 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, ... }:
 {
-
-  imports = [ 
-      ./hardware-configuration.nix # must have      
-    ];
-
+  config,
+  pkgs,
+  ...
+}: {
+  imports = [
+    ./hardware-configuration.nix # must have
+  ];
+  
   # Use latest LTS kernel
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # CPU scaling driver
-  boot.kernelModules = [ "amd-pstate" ];
-  boot.kernelParams = [ 
+  boot.kernelModules = ["amd-pstate"];
+  boot.kernelParams = [
     "amd_pstate=active"
   ];
 
   # enable correct drivers for Vega 56 (Vega 10)
-  boot.initrd.kernelModules = [ "amdgpu" ];
+  boot.initrd.kernelModules = ["amdgpu"];
 
   # Enable mounting shared ntfs partitions
   boot.supportedFilesystems = ["ntfs" "fat32" "ext4" "exfat" "btrfs"];
-  
+
   # Prevent dual-boot to mess with clock
   time.hardwareClockInLocalTime = true;
 
   # Bootloader.
-  # boot.loader.systemd-boot.enable = true; # working before  
+  # boot.loader.systemd-boot.enable = true; # working before
   # Use the grub (to keep Windows install) EFI boot loader.
   boot.loader.timeout = 10;
   boot.loader.grub = {
-	enable = true;
-	useOSProber = true;
-	device = "nodev"; 
-	efiSupport = true;
-	configurationLimit = 25;
-	};
+    enable = true;
+    useOSProber = true;
+    device = "nodev";
+    efiSupport = true;
+    configurationLimit = 25;
+  };
   boot.loader.efi = {
-	canTouchEfiVariables = true;
-	};
-  
+    canTouchEfiVariables = true;
+  };
+
   # Mount shared HDD
   fileSystems."/mnt/data" = {
     device = "/dev/sda2";
     fsType = "ntfs";
-    options = [ "defaults" ];
+    options = ["defaults"];
   };
   # Gaming partition
   #fileSystems."/mnt/games" = {
@@ -71,7 +72,7 @@
   networking.networkmanager.enable = true;
   time.timeZone = "America/Toronto";
   i18n.defaultLocale = "en_CA.UTF-8";
-  
+
   nix.optimise.automatic = true;
   nix.gc = {
     automatic = true;
@@ -79,82 +80,86 @@
     options = "--delete-older-than 7d";
   };
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  
-  services.gnome.sushi.enable = true; # for nemo  
-  services.displayManager = {        
-    sddm = {      
-      enable = true;  
-      wayland.enable = true;
-      theme = "catppuccin-sddm-corners";
-      package = pkgs.kdePackages.sddm;
+  nix.settings.experimental-features = ["nix-command" "flakes"];
+
+  stylix = {
+    enable = true;
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
+    image = /bg.png;
+    opacity.terminal = 0.8;
+    targets = {
+      grub = {
+      enable = true;
       };
-  };
-  
-  stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
-  stylix.image = ./bg.png;
-    
+    };    
+  };  
+
   services = {
-    # Makes communicating between packages easier  
-    dbus.enable = true; 
+    displayManager = {
+      sddm = {
+        enable = true;
+        wayland.enable = true;
+      };
+    };
+    gnome = {
+      sushi.enable = true; # Nemo may need this
+      gnome-keyring.enable = true; # for WiFi
+    };
+
+    mpd = {
+      enable = true;
+      musicDirectory = "/home/salgadev/Music";
+      extraConfig = ''
+          audio_output {
+            type "pulse"
+            name "PulSonido"
+            server "127.0.0.1" # must connect to the local sound server
+        }
+      '';
+      # Optional:
+      network.listenAddress = "any"; # if you want to allow non-localhost connections
+      startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
+    };
+
+    pipewire = {
+      enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = true;
+      pulse.enable = true;
+    };
+
+    # Makes communicating between packages easier
+    dbus.enable = true;
 
     # Automount / Search HDDs
     gvfs.enable = true;
-    udisks2.enable = true;  
+    udisks2.enable = true;
     devmon.enable = true;
-    
-    # bluetooth  
+
+    # bluetooth
     blueman.enable = true;
 
     # Thumbnails
-    tumbler.enable = true;  
+    tumbler.enable = true;
 
     flatpak.enable = true;
   };
-  
 
   # enable desktop portal
   xdg.portal = {
     enable = true;
     wlr.enable = true;
-#    extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
+    # extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
   };
 
   sound.enable = true;
   security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    # jack.enable = true;  # suspect fixes bug when using headphones and shotcut
 
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
-  };
-  
-  hardware.pulseaudio = { 
+  hardware.pulseaudio = {
     enable = false;
     extraConfig = "load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1";
-    };
-
-  services.mpd = {
-    enable = true;
-    musicDirectory = "/home/salgadev/Music";
-    extraConfig = ''
-      audio_output {
-        type "pulse"
-        name "PulSonido"
-        server "127.0.0.1" # must connect to the local sound server
-    } 
-    '';
-    # Optional:
-    network.listenAddress = "any"; # if you want to allow non-localhost connections
-    startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
   };
-  
+
   # enable and configure polkit to automount drives
   security.polkit = {
     enable = true;
@@ -169,34 +174,35 @@
     '';
   };
 
-  # auto connect to wifi on wayland  
+  # auto connect to wifi on wayland
   security.pam = {
+    services.gdm-password.enableGnomeKeyring = true;
     mount.enable = true; # should mount on login
     services = {
       sddm.enableKwallet = true;
       swaylock.text = ''
         auth include login
-        '';
+      '';
     };
   };
 
   # Enable OpenCL with Radeon Open Compute (ROCm)
   hardware = {
-    opengl = { 
+    opengl = {
       enable = true;
       extraPackages = with pkgs; [
         rocm-opencl-icd
         rocm-opencl-runtime
         amdvlk # Use AMD Vulkan drivers as needed
-	vaapiVdpau
+        vaapiVdpau
         libvdpau-va-gl
       ];
-      driSupport = true;    
+      driSupport = true;
       driSupport32Bit = true;
     };
     bluetooth.enable = true;
   };
-  
+
   virtualisation = {
     libvirtd.enable = true;
     podman = {
@@ -204,8 +210,8 @@
       # Create a `docker` alias for podman,
       # to use it as a drop-in replacement
       dockerCompat = true;
-	
-      # required for podman-compose      
+
+      # required for podman-compose
       defaultNetwork.settings.dns_enabled = true;
     };
   };
@@ -214,15 +220,12 @@
     # Allow proprietary packages
     allowUnfree = true;
 
-    # Seems spotify is dead/broken today
-    
     packageOverrides = pkgs: {
       # Enable the NUR
       nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
         inherit pkgs;
       };
     };
-    
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -230,39 +233,35 @@
     isNormalUser = true;
     home = "/home/salgadev";
     description = "Carlos Salgado";
-    extraGroups = [ "plasma" "networkmanager" "wheel" "kvm" "input" "disk" "libvirtd" "storage"	"video"]; 
-    packages = with pkgs; [     
-      wget      
+    extraGroups = ["plasma" "networkmanager" "wheel" "kvm" "input" "disk" "libvirtd" "storage" "video"];
+    packages = with pkgs; [
+      wget
       autojump
-      gh          # github login
+      gh # github login
       git
-      tldr
-      variety     # wallpapers
-      obs-studio  # screen recording	
+      tldr      
+      obs-studio # screen recording
       krusader # find duplicate files and more
       betterbird # email
-      joplin-desktop # notetaking gui
-      libsForQt5.kate # text editor
-      apostrophe # Markdown editor      
+      joplin-desktop # notetaking gui      
+      apostrophe # Markdown editor
       freeoffice
       rclone
       rclone-browser
       keepassxc
-      codeql
-      # design apps
-      # gimp-with-plugins 
-      # inkscape-with-extensions
+      codeql      
 
-      # browsers 
-      brave       # private web browsing
+      # browsers
+      brave # private web browsing
       ungoogled-chromium # for compatibility
 
       # media
-      mpv
-      qmplay2
+      oculante
+      imv
+      mpv      
     ];
   };
-  
+
   # Required for flatpaks
   fonts.fontDir.enable = true;
 
@@ -286,11 +285,15 @@
     merriweather
     merriweather-sans
   ];
-  
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-   
-  environment.systemPackages = with pkgs; [     
+
+  environment.systemPackages = with pkgs; [
+    # wayfire 
+    walker
+    satty # screenshots
+    
     # hyprland requirements
     waybar
     hyprland-autoname-workspaces
@@ -306,23 +309,19 @@
     libnotify
     kitty
     networkmanagerapplet
-    jq
-    swappy
+    jq    
     slurp
     grim
     cliphist
     wl-clipboard
-    catppuccin-sddm-corners    
 
     # screenlock
     swaylock-effects
     wlogout
     swayidle
-    hypridle
-    hyprlock
 
     # audio/media commands
-    pulseaudio 
+    pulseaudio
     pamixer
     pavucontrol
 
@@ -341,27 +340,19 @@
     cinnamon.folder-color-switcher
     nemo-qml-plugin-dbus
 
-    libsForQt5.sddm-kcm
-    libsForQt5.kwallet-pam  # open wifi key on login
-    kwalletcli # probably needed by polkit
-    
-    playerctl # media
-    wavpack # play wavs   
-    #nur.repos.nltch.spotify-adblock
+    kdePackages.kwallet
 
+    playerctl # media
+    wavpack # play wavs
+    #nur.repos.nltch.spotify-adblock
     fontconfig # helps flatpaks
-    
     baobab # storage visualizer
-    swayimg # image viewer
-    
+
     mate.atril # document viewers
 
     # Other utilities
     killall
     libsForQt5.kdeconnect-kde # SmartPhone Integration
-
-    btop # system monitor
-
     pfetch # fast flex fetch
     clinfo # verify OpenCL works
 
@@ -371,56 +362,76 @@
     # icons
     papirus-icon-theme
 
-    xorg.xhost # possibly required by distrobox    
-        
+    xorg.xhost # possibly required by distrobox
+
     chntpw # fix windows registrt util
 
     (vscode-with-extensions.override {
       vscode = vscodium;
-      vscodeExtensions = with vscode-extensions; [
-        # python
-        ms-python.vscode-pylance
-        ms-python.black-formatter       
-        ms-toolsai.jupyter
-        ms-toolsai.jupyter-renderers
-        ms-toolsai.vscode-jupyter-cell-tags
-        ms-toolsai.jupyter-keymap
-        ms-toolsai.vscode-jupyter-slideshow
-        
-        # nix
-        bbenoist.nix
-        kamadorueda.alejandra
-        jnoortheen.nix-ide
+      vscodeExtensions = with vscode-extensions;
+        [
+          # theming
+          catppuccin.catppuccin-vsc
+          catppuccin.catppuccin-vsc-icons
 
-        # markdown
-        yzhang.markdown-all-in-one
-        bierner.markdown-mermaid
-        
-        # misc
-        usernamehw.errorlens        
+          # python
+          ms-python.vscode-pylance
+          ms-python.black-formatter
+          ms-toolsai.jupyter
+          ms-toolsai.jupyter-renderers
+          ms-toolsai.vscode-jupyter-cell-tags
+          ms-toolsai.jupyter-keymap
+          ms-toolsai.vscode-jupyter-slideshow
 
-        # remotes
-        ms-azuretools.vscode-docker        
-        ms-vscode-remote.remote-containers
-        ms-vscode-remote.remote-ssh                
-        
-      ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-        {
-          name = "remote-ssh-edit";
-          publisher = "ms-vscode-remote";
-	        version = "0.47.2";
-	        sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
-	      }
-        {        
-          name = "python";
-          publisher = "ms-python";
-          version = "2024.5.11021008";
-          sha256 = "52723495e44aa82b452c17464bf52f2ee09cc508626f26340a19b343dbb2b686";          
-        }
-      ];
+          # nix
+          bbenoist.nix
+          kamadorueda.alejandra
+          jnoortheen.nix-ide
+
+          # markdown
+          yzhang.markdown-all-in-one
+          bierner.markdown-mermaid
+
+          # misc
+          usernamehw.errorlens
+
+          # remotes
+          ms-azuretools.vscode-docker
+          ms-vscode-remote.remote-containers
+          ms-vscode-remote.remote-ssh
+
+          # AI Tools
+          continue.continue
+        ]
+        ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+          {
+            name = "remote-ssh-edit";
+            publisher = "ms-vscode-remote";
+            version = "0.47.2";
+            sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
+          }
+          {
+            name = "python";
+            publisher = "ms-python";
+            version = "2024.5.11021008";
+            sha256 = "52723495e44aa82b452c17464bf52f2ee09cc508626f26340a19b343dbb2b686";
+          }
+          {
+            name = "vscode-codeql";
+            publisher = "GitHub";
+            version = "1.13.1";
+            sha256 = "b35694a784fdbbf6126cd115fa4aef7159e7c9997a3af3968ed28d845780dfbd";
+          }
+          {
+            name = "playwright";
+            publisher = "ms-playwright";
+            version = "1.1.5";
+            sha256 = "0c0a9048451d302c36b0525e0225e064e25a759c9609875b4493f599477d6028";
+          }
+        ];
     })
   ];
-  
+
   # Add HIP support
   systemd.tmpfiles.rules = [
     "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.rocmPackages.clr}"
@@ -428,18 +439,18 @@
 
   # Start polkit-kde as a systemd service
   systemd = {
-  user.services.polkit-kde-authentication-agent-1 = {
-    description = "polkit-kde-authentication-agent-1";
-    wantedBy = [ "graphical-session.target" ];
-    wants = [ "graphical-session.target" ];
-    after = [ "graphical-session.target" ];
-    serviceConfig = {
+    user.services.polkit-kde-authentication-agent-1 = {
+      description = "polkit-kde-authentication-agent-1";
+      wantedBy = ["graphical-session.target"];
+      wants = ["graphical-session.target"];
+      after = ["graphical-session.target"];
+      serviceConfig = {
         Type = "simple";
         ExecStart = "${pkgs.polkit-kde-agent}/libexec/polkit-kde-authentication-agent-1";
         Restart = "on-failure";
         RestartSec = 1;
         TimeoutStopSec = 10;
-        };
+      };
     };
   };
 
@@ -450,34 +461,28 @@
   #   enable = true;
   #   enableSSHSupport = true;
   # };
-  
-    
+
   # flex
   environment.shellInit = "pfetch";
-  
-  programs ={
-    # Window managers    
-    sway = {
+
+  programs = {
+    # Window managers
+    wayfire = {
       enable = true;
-      wrapperFeatures.gtk = true;
-      package = pkgs.swayfx;
+      plugins = with pkgs.wayfirePlugins; [
+        wcm
+        wf-shell
+        wayfire-plugins-extra
+      ];
     };
     xwayland.enable = true;
     hyprland = {
-      enable = true;
-      #package = pkgs.unstable.hyprland;
+      enable = true;      
     };
     direnv.enable = true;
-    dconf.enable = true; 
-    virt-manager.enable = true;    
+    dconf.enable = true;
+    virt-manager.enable = true;
     nix-ld.enable = true; # Helps VSCodium
-    thunar = {
-      enable = true;
-      plugins = with pkgs.xfce; [
-        thunar-archive-plugin
-        thunar-volman
-      ];
-    };
   };
 
   # Flatpak terminal shortcuts
@@ -488,17 +493,16 @@
   environment.sessionVariables = {
     # Helps Chromium and Electron apps
     NIXOS_OZONE_WL = "1";
-  };  
+  };
 
   # List services that you want to enable:
 
-  # Likely not being used 
+  # Likely not being used
   # Enable the OpenSSH daemon.
   #services.openssh = {
   #  enable = true;
   #  settings.X11Forwarding = true;
   #  };
-  	
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
@@ -513,5 +517,4 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.05"; # Did you read the comment?
-
 }

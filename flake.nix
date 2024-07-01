@@ -4,17 +4,18 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";    
     stylix.url = "github:danth/stylix";
-    walker.url = "github:abenz1267/walker";
+    nur.url = github:nix-community/NUR;
   };
 
-  outputs = { nixpkgs, stylix, ... }@inputs: {
+  outputs = { nixpkgs, stylix, nur, ... }@inputs: {
     nixosConfigurations = {
       # networking.hostname = nixos
       nixos = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs;};
         system = "x86_64-linux";
         modules = [
-          ./configuration.nix           
+          ./configuration.nix
+          nur.nixosModules.nur
           inputs.stylix.nixosModules.stylix
         ];
       };

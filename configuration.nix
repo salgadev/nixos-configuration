@@ -92,15 +92,17 @@
       enable = true;
       };
     };    
-  };  
+  };
 
   services = {
-    displayManager = {
-      sddm = {
-        enable = true;
-        wayland.enable = true;
-      };
+    xserver = {      
+      enable = true;
     };
+    displayManager.sddm = {
+      enable = true;
+      wayland.enable = true;
+      theme = "catppuccin-sddm-corners";      
+    };              
     gnome = {
       sushi.enable = true; # Nemo may need this
       gnome-keyring.enable = true; # for WiFi
@@ -222,7 +224,10 @@
 
     packageOverrides = pkgs: {
       # Enable the NUR
-      nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
+      nur = import (builtins.fetchTarball {
+        url = "https://github.com/nix-community/NUR/archive/3a6a6f4da737da41e27922ce2cfacf68a109ebce.tar.gz";
+        sha256 = "04387gzgl8y555b3lkz9aiw9xsldfg4zmzp930m62qw8zbrvrshd"; 
+      }) {
         inherit pkgs;
       };
     };
@@ -254,6 +259,7 @@
       # browsers
       brave # private web browsing
       ungoogled-chromium # for compatibility
+      floorp 
 
       # media
       oculante
@@ -290,9 +296,18 @@
   # $ nix search wget
 
   environment.systemPackages = with pkgs; [
+     config.nur.repos.nltch.spotify-adblock    
+
+    # sddm
+    catppuccin-sddm-corners
+    libsForQt5.qt5.qtsvg
+    libsForQt5.qt5.qtgraphicaleffects
+    libsForQt5.qt5.qtquickcontrols2
+
     # wayfire 
-    walker
     satty # screenshots
+    foot
+    clipse
     
     # hyprland requirements
     waybar

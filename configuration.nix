@@ -9,40 +9,40 @@
   imports = [
     ./hardware-configuration.nix # must have
   ];
-  
-  # Use latest LTS kernel
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  # CPU scaling driver
-  boot.kernelModules = ["amd-pstate"];
-  boot.kernelParams = [
-    "amd_pstate=active"
-  ];
-
-  # enable correct drivers for Vega 56 (Vega 10)
-  boot.initrd.kernelModules = ["amdgpu"];
-
-  # Enable mounting shared ntfs partitions
-  boot.supportedFilesystems = ["ntfs" "fat32" "ext4" "exfat" "btrfs"];
 
   # Prevent dual-boot to mess with clock
   time.hardwareClockInLocalTime = true;
+  
+  # Use latest LTS kernel
+  boot = {
+    kernelPackages = pkgs.linuxPackages_latest;
+    
+    # CPU scaling driver
+    kernelModules = ["amd-pstate"];
+    kernelParams = ["amd_pstate=active"];
+    
+    # enable correct drivers for Vega 56 (Vega 10)
+    initrd.kernelModules = ["amdgpu"];
+    
+    # Enable mounting shared ntfs partitions
+    supportedFilesystems = ["ntfs" "fat32" "ext4" "exfat" "btrfs"];
 
-  # Bootloader.
-  # boot.loader.systemd-boot.enable = true; # working before
-  # Use the grub (to keep Windows install) EFI boot loader.
-  boot.loader.timeout = 10;
-  boot.loader.grub = {
-    enable = true;
-    useOSProber = true;
-    device = "nodev";
-    efiSupport = true;
-    configurationLimit = 25;
-  };
-  boot.loader.efi = {
-    canTouchEfiVariables = true;
-  };
-
+    loader = {
+      timeout = 10;
+      grub = {
+        enable = true;
+        useOSProber = true;
+        device = "nodev";
+        efiSupport = true;
+        configurationLimit = 1;
+      };
+      efi = {
+        canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot/efi";
+      };
+    };
+  };  
+  
   # Mount shared HDD
   fileSystems."/mnt/data" = {
     device = "/dev/sda2";
@@ -89,12 +89,18 @@
     opacity.terminal = 0.8;
     targets = {
       grub = {
-      enable = true;
+        enable = true;
       };
     };    
   };
 
   services = {
+    openvpn.servers = {
+      tryhackme = {
+        config = "config /home/salgadev/code/tryhackme/salgadev.ovpn";
+        autoStart = false;        
+      };
+    };
     xserver = {      
       enable = true;
     };
@@ -154,7 +160,7 @@
     # extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
   };
 
-  sound.enable = true;
+  # sound.enable = true;
   security.rtkit.enable = true;
 
   hardware.pulseaudio = {
@@ -188,24 +194,26 @@
     };
   };
 
-  # Enable OpenCL with Radeon Open Compute (ROCm)
   hardware = {
-    opengl = {
+    # graphics = { unstable option
+    opengl =  {    
       enable = true;
+      # enable32Bit = true; unstable option
       extraPackages = with pkgs; [
-        rocm-opencl-icd
-        rocm-opencl-runtime
-        amdvlk # Use AMD Vulkan drivers as needed
-        vaapiVdpau
-        libvdpau-va-gl
-      ];
-      driSupport = true;
-      driSupport32Bit = true;
-    };
+        rocmPackages.clr.icd # broken in unstable
+        amdvlk # Use AMD Vulkan drivers as needed        
+        ];
+      extraPackages32 = with pkgs; [
+        driversi686Linux.amdvlk
+        ];
+    };    
     bluetooth.enable = true;
   };
 
   virtualisation = {
+    # Enable common container config files in /etc/containers
+    containers.enable = true;
+
     libvirtd.enable = true;
     podman = {
       enable = true;
@@ -238,7 +246,7 @@
     isNormalUser = true;
     home = "/home/salgadev";
     description = "Carlos Salgado";
-    extraGroups = ["plasma" "networkmanager" "wheel" "kvm" "input" "disk" "libvirtd" "storage" "video"];
+    extraGroups = ["networkmanager" "wheel" "kvm" "input" "disk" "libvirtd" "storage" "video"];
     packages = with pkgs; [
       wget
       autojump
@@ -254,7 +262,6 @@
       rclone
       rclone-browser
       keepassxc
-      codeql      
 
       # browsers
       brave # private web browsing
@@ -296,7 +303,8 @@
   # $ nix search wget
 
   environment.systemPackages = with pkgs; [
-     config.nur.repos.nltch.spotify-adblock    
+    config.nur.repos.nltch.spotify-adblock
+    distrobox   
 
     # sddm
     catppuccin-sddm-corners
@@ -308,7 +316,7 @@
     satty # screenshots
     foot
     clipse
-    
+    alsa-utils # volume control
     # hyprland requirements
     waybar
     hyprland-autoname-workspaces
@@ -343,6 +351,7 @@
     # bluetooth
     bluez
     bluez-tools
+
     starship
     gdu
     ncdu
@@ -359,7 +368,6 @@
 
     playerctl # media
     wavpack # play wavs
-    #nur.repos.nltch.spotify-adblock
     fontconfig # helps flatpaks
     baobab # storage visualizer
 
@@ -371,13 +379,16 @@
     pfetch # fast flex fetch
     clinfo # verify OpenCL works
 
+    # podman
+    dive            # look into docker image layers
+    podman-tui      # status of containers in the terminal    
+    podman-compose  # start group of containers for dev
+
     rar
     alejandra
 
     # icons
     papirus-icon-theme
-
-    xorg.xhost # possibly required by distrobox
 
     chntpw # fix windows registrt util
 
@@ -430,23 +441,12 @@
             publisher = "ms-python";
             version = "2024.5.11021008";
             sha256 = "52723495e44aa82b452c17464bf52f2ee09cc508626f26340a19b343dbb2b686";
-          }
-          {
-            name = "vscode-codeql";
-            publisher = "GitHub";
-            version = "1.13.1";
-            sha256 = "b35694a784fdbbf6126cd115fa4aef7159e7c9997a3af3968ed28d845780dfbd";
-          }
-          {
-            name = "playwright";
-            publisher = "ms-playwright";
-            version = "1.1.5";
-            sha256 = "0c0a9048451d302c36b0525e0225e064e25a759c9609875b4493f599477d6028";
-          }
+          }                    
         ];
     })
   ];
 
+  # Seems broken July 2024 
   # Add HIP support
   systemd.tmpfiles.rules = [
     "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.rocmPackages.clr}"
@@ -480,7 +480,7 @@
   # flex
   environment.shellInit = "pfetch";
 
-  programs = {
+  programs = {    
     # Window managers
     wayfire = {
       enable = true;
@@ -531,5 +531,5 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "23.05"; # Did you read the comment?
+  system.stateVersion = "24.05"; # Did you read the comment?
 }

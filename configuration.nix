@@ -77,7 +77,7 @@
   nix.gc = {
     automatic = true;
     dates = "daily";
-    options = "--delete-older-than 7d";
+    options = "--delete-older-than 30d";
   };
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
@@ -86,34 +86,54 @@
     enable = true;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
     image = /bg.png;
-    opacity.terminal = 0.8;
+    polarity = "dark";
+        
+    cursor  = {
+      package = pkgs.rose-pine-cursor;
+      name = "BreezeX-RosePineDawn-Linux";
+      size = 24;
+    };    
+
+    fonts.sizes = {
+      terminal = 17;
+    };
+
     targets = {
-      grub = {
-        enable = true;
-      };
+      grub.enable = true;
+      gnome.enable = true;
+      gtk.enable = true;
     };    
   };
 
   services = {
+    ollama = {
+      enable = true;
+      acceleration = "rocm";
+    };    
+
     openvpn.servers = {
       tryhackme = {
         config = "config /home/salgadev/code/tryhackme/salgadev.ovpn";
         autoStart = false;        
       };
-    };
+    };  
+
     xserver = {      
-      enable = true;
+      enable = true;      
     };
+
     displayManager.sddm = {
       enable = true;
       wayland.enable = true;
       theme = "catppuccin-sddm-corners";      
     };              
-    gnome = {
-      sushi.enable = true; # Nemo may need this
+    
+    gnome = {      
       gnome-keyring.enable = true; # for WiFi
+      glib-networking.enable = true;
+      at-spi2-core.enable = true;
     };
-
+    
     mpd = {
       enable = true;
       musicDirectory = "/home/salgadev/Music";
@@ -151,6 +171,8 @@
     tumbler.enable = true;
 
     flatpak.enable = true;
+    # cinnamon clashing with already installed nemo
+    # cinnamon.apps.enable = true;
   };
 
   # enable desktop portal
@@ -165,6 +187,7 @@
 
   hardware.pulseaudio = {
     enable = false;
+    package = pkgs.pulseaudioFull;
     extraConfig = "load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1";
   };
 
@@ -195,8 +218,7 @@
   };
 
   hardware = {
-    # graphics = { unstable option
-    opengl =  {    
+    graphics = {     
       enable = true;
       # enable32Bit = true; unstable option
       extraPackages = with pkgs; [
@@ -255,23 +277,21 @@
       tldr      
       obs-studio # screen recording
       krusader # find duplicate files and more
-      betterbird # email
+      #betterbird # email
       joplin-desktop # notetaking gui      
       apostrophe # Markdown editor
       freeoffice
       rclone
       rclone-browser
-      keepassxc
-
-      # browsers
       brave # private web browsing
       ungoogled-chromium # for compatibility
       floorp 
-
-      # media
       oculante
       imv
-      mpv      
+      mpv
+      oterm
+      alpaca
+      gpt4all      
     ];
   };
 
@@ -297,154 +317,180 @@
     zafiro-icons
     merriweather
     merriweather-sans
-  ];
+  ]; 
 
   # List packages installed in system profile. To search, run:
-  # $ nix search wget
+  # $ nix search wget  
+  environment = {
+    shellInit = "pfetch"; # flex  
+    # Flatpak shortcuts
+    shellAliases = {
+      shotcut = "org.shotcut.Shotcut"; # outdated in nixpkgs
+    };
+    sessionVariables = {
+      # Helps Chromium and Electron apps
+      NIXOS_OZONE_WL = "1";
+    };
+    
+    systemPackages = with pkgs; [
+      config.nur.repos.nltch.spotify-adblock
+      distrobox
 
-  environment.systemPackages = with pkgs; [
-    config.nur.repos.nltch.spotify-adblock
-    distrobox   
+      # sddm
+      catppuccin-sddm-corners
+      libsForQt5.qt5.qtsvg
+      libsForQt5.qt5.qtgraphicaleffects
+      libsForQt5.qt5.qtquickcontrols2
 
-    # sddm
-    catppuccin-sddm-corners
-    libsForQt5.qt5.qtsvg
-    libsForQt5.qt5.qtgraphicaleffects
-    libsForQt5.qt5.qtquickcontrols2
+      # wayfire
+      satty # screenshots
+      foot
+      clipse
+      alsa-utils # volume control
+      tdrop            
+      waybar
+      rofi-wayland
+      # mako
+      fnott
+      xdg-utils
+      hyprpicker
+      wf-recorder
+      # polkit-kde-agent
+      # polkit_gnome
+      libnotify
+      kitty
+      networkmanagerapplet
+      jq 
+      slurp
+      grim
+      cliphist
+      wl-clipboard
 
-    # wayfire 
-    satty # screenshots
-    foot
-    clipse
-    alsa-utils # volume control
-    # hyprland requirements
-    waybar
-    hyprland-autoname-workspaces
-    hyprland-protocols
-    rofi-wayland
-    mako
-    swww
-    xdg-utils
-    hyprpicker
-    wf-recorder
-    polkit-kde-agent
-    polkit_gnome
-    libnotify
-    kitty
-    networkmanagerapplet
-    jq    
-    slurp
-    grim
-    cliphist
-    wl-clipboard
+      # screenlock
+      swaylock-effects
+      wlogout
+      swayidle
 
-    # screenlock
-    swaylock-effects
-    wlogout
-    swayidle
+      # audio/media commands
+      # pulseaudio
+      pavucontrol
+      # pamixer
 
-    # audio/media commands
-    pulseaudio
-    pamixer
-    pavucontrol
+      # bluetooth
+      bluez
+      bluez-tools
 
-    # bluetooth
-    bluez
-    bluez-tools
+      starship
+      gdu
+      ncdu
+      xfce.xfce4-taskmanager
 
-    starship
-    gdu
-    ncdu
-    xfce.xfce4-taskmanager
+      # Nemo File Manager
+      # already using cinnamon as backup DE
+      nemo-with-extensions
+      nemo-fileroller
+      nemo-python
+      folder-color-switcher
+      nemo-qml-plugin-dbus
 
-    # Nemo File Manager
-    cinnamon.nemo-with-extensions
-    cinnamon.nemo-fileroller
-    cinnamon.nemo-python
-    cinnamon.folder-color-switcher
-    nemo-qml-plugin-dbus
+      kdePackages.kwallet
 
-    kdePackages.kwallet
+      playerctl # media
+      wavpack # play wavs
+      fontconfig # helps flatpaks
+      baobab # storage visualizer
 
-    playerctl # media
-    wavpack # play wavs
-    fontconfig # helps flatpaks
-    baobab # storage visualizer
+      mate.atril # document viewers
 
-    mate.atril # document viewers
+      # Other utilities
+      killall
+      libsForQt5.kdeconnect-kde # SmartPhone Integration
+      pfetch # fast flex fetch
+      clinfo # verify OpenCL works
 
-    # Other utilities
-    killall
-    libsForQt5.kdeconnect-kde # SmartPhone Integration
-    pfetch # fast flex fetch
-    clinfo # verify OpenCL works
+      # podman
+      dive            # look into docker image layers
+      podman-tui      # status of containers in the terminal    
+      podman-compose  # start group of containers for dev
 
-    # podman
-    dive            # look into docker image layers
-    podman-tui      # status of containers in the terminal    
-    podman-compose  # start group of containers for dev
+      rar
+      alejandra
+      
+      # Theming
+      gnome-tweaks
+      glib
+      themechanger
+      ncpamixer
+            
+      # GTK themes
+      gtk-engine-murrine
+      # catppuccin-gtk
+      magnetic-catppuccin-gtk
+      rose-pine-gtk-theme
+      config.nur.repos.ataraxiasjel.rosepine-gtk-icons
 
-    rar
-    alejandra
+      # Icons
+      colloid-icon-theme
+      rose-pine-icon-theme # last update 2022
+      kora-icon-theme
+      reversal-icon-theme
 
-    # icons
-    papirus-icon-theme
+      chntpw # fix windows registrt util
 
-    chntpw # fix windows registrt util
+      (vscode-with-extensions.override {
+        vscode = vscodium;
+        vscodeExtensions = with vscode-extensions;
+          [
+            # theming
+            catppuccin.catppuccin-vsc
+            catppuccin.catppuccin-vsc-icons
 
-    (vscode-with-extensions.override {
-      vscode = vscodium;
-      vscodeExtensions = with vscode-extensions;
-        [
-          # theming
-          catppuccin.catppuccin-vsc
-          catppuccin.catppuccin-vsc-icons
+            # python
+            ms-python.vscode-pylance
+            ms-python.black-formatter
+            ms-toolsai.jupyter
+            ms-toolsai.jupyter-renderers
+            ms-toolsai.vscode-jupyter-cell-tags
+            ms-toolsai.jupyter-keymap
+            ms-toolsai.vscode-jupyter-slideshow
 
-          # python
-          ms-python.vscode-pylance
-          ms-python.black-formatter
-          ms-toolsai.jupyter
-          ms-toolsai.jupyter-renderers
-          ms-toolsai.vscode-jupyter-cell-tags
-          ms-toolsai.jupyter-keymap
-          ms-toolsai.vscode-jupyter-slideshow
+            # nix
+            bbenoist.nix
+            kamadorueda.alejandra
+            jnoortheen.nix-ide
 
-          # nix
-          bbenoist.nix
-          kamadorueda.alejandra
-          jnoortheen.nix-ide
+            # markdown
+            yzhang.markdown-all-in-one
+            bierner.markdown-mermaid
 
-          # markdown
-          yzhang.markdown-all-in-one
-          bierner.markdown-mermaid
+            # misc
+            usernamehw.errorlens
 
-          # misc
-          usernamehw.errorlens
+            # remotes
+            ms-azuretools.vscode-docker
+            ms-vscode-remote.remote-containers
+            ms-vscode-remote.remote-ssh
 
-          # remotes
-          ms-azuretools.vscode-docker
-          ms-vscode-remote.remote-containers
-          ms-vscode-remote.remote-ssh
-
-          # AI Tools
-          continue.continue
-        ]
-        ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-          {
-            name = "remote-ssh-edit";
-            publisher = "ms-vscode-remote";
-            version = "0.47.2";
-            sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
-          }
-          {
-            name = "python";
-            publisher = "ms-python";
-            version = "2024.5.11021008";
-            sha256 = "52723495e44aa82b452c17464bf52f2ee09cc508626f26340a19b343dbb2b686";
-          }                    
-        ];
-    })
-  ];
+            # AI Tools
+            continue.continue
+          ]
+          ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+            {
+              name = "remote-ssh-edit";
+              publisher = "ms-vscode-remote";
+              version = "0.47.2";
+              sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
+            }
+            {
+              name = "python";
+              publisher = "ms-python";
+              version = "2024.5.11021008";
+              sha256 = "52723495e44aa82b452c17464bf52f2ee09cc508626f26340a19b343dbb2b686";
+            }                    
+          ];
+      })
+    ];
+  };  
 
   # Seems broken July 2024 
   # Add HIP support
@@ -477,9 +523,6 @@
   #   enableSSHSupport = true;
   # };
 
-  # flex
-  environment.shellInit = "pfetch";
-
   programs = {    
     # Window managers
     wayfire = {
@@ -490,24 +533,11 @@
         wayfire-plugins-extra
       ];
     };
-    xwayland.enable = true;
-    hyprland = {
-      enable = true;      
-    };
+    xwayland.enable = true;    
     direnv.enable = true;
     dconf.enable = true;
     virt-manager.enable = true;
     nix-ld.enable = true; # Helps VSCodium
-  };
-
-  # Flatpak terminal shortcuts
-  environment.shellAliases = {
-    shotcut = "org.shotcut.Shotcut"; # outdated in nixpkgs
-  };
-
-  environment.sessionVariables = {
-    # Helps Chromium and Electron apps
-    NIXOS_OZONE_WL = "1";
   };
 
   # List services that you want to enable:

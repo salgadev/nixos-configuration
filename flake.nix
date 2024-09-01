@@ -2,7 +2,6 @@
   description = "My personal NixOS flake";
 
   inputs = {
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     stylix.url = "github:danth/stylix";
     nur.url = github:nix-community/NUR;

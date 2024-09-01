@@ -13,7 +13,5 @@ sudo nixos-rebuild switch -I nixos-config=./configuration.nix
 Rebuild using the new flake (Recommended)
 
 ```
-nix flake update 
-
-sudo nixos-rebuild --flake .#nixos switch --impure -p unstable
+nix flake update && sudo nixos-rebuild --flake .#nixos switch --impure -p unstable
 ```

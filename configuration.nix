@@ -8,6 +8,7 @@
 }: {
   imports = [
     ./hardware-configuration.nix # must have
+     <home-manager/nixos>
   ];
 
   # Prevent dual-boot to mess with clock
@@ -83,19 +84,23 @@
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
   stylix = {
-    enable = true;
+    enable = true;    
     base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
-    image = /bg.png;
-    polarity = "dark";
+    # polarity = "dark"; # breaks base16Scheme for some reason
+    image = /usr/share/backgrounds/lpz/LaPazAtardecer.jpg;    
+
+    homeManagerIntegration.autoImport = true;
+    autoEnable = true;
+    opacity.terminal = 0.9;
         
     cursor  = {
       package = pkgs.rose-pine-cursor;
       name = "BreezeX-RosePineDawn-Linux";
-      size = 24;
+      size = 32;
     };    
 
     fonts.sizes = {
-      terminal = 17;
+      terminal = 16;
     };
 
     targets = {
@@ -251,7 +256,6 @@
   nixpkgs.config = {
     # Allow proprietary packages
     allowUnfree = true;
-
     packageOverrides = pkgs: {
       # Enable the NUR
       nur = import (builtins.fetchTarball {
@@ -269,11 +273,19 @@
     home = "/home/salgadev";
     description = "Carlos Salgado";
     extraGroups = ["networkmanager" "wheel" "kvm" "input" "disk" "libvirtd" "storage" "video"];
-    packages = with pkgs; [
+  };
+
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
+  home-manager.backupFileExtension = "backup";
+  home-manager.users.salgadev = {pkgs, ...}:{    
+    nixpkgs.config.allowUnfreePredicate = (_: true); 
+    home.packages = with pkgs; [
       wget
       autojump
-      gh # github login
       git
+      gh # github login
+      
       tldr      
       obs-studio # screen recording
       krusader # find duplicate files and more
@@ -293,6 +305,9 @@
       alpaca
       gpt4all      
     ];
+    programs.bash.enable = true;
+
+    home.stateVersion = "24.05";
   };
 
   # Required for flatpaks
@@ -367,7 +382,8 @@
       wl-clipboard
 
       # screenlock
-      swaylock-effects
+      # swaylock-effects
+      swaylock
       wlogout
       swayidle
 

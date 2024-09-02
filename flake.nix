@@ -9,8 +9,8 @@
 
   outputs = { nixpkgs, stylix, nur, ... }@inputs: {
     nixosConfigurations = {
-      # networking.hostname = nixos
-      nixos = nixpkgs.lib.nixosSystem {
+      # hostname is:
+      desktop = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs;};
         system = "x86_64-linux";
         modules = [

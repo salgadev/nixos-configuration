@@ -14,4 +14,17 @@ Rebuild using the new flake (Recommended)
 
 ```
 nix flake update && sudo nixos-rebuild --flake .#desktop switch --impure -p unstable
+
+```
+
+## Nightly Home Manager version
+Still under heavy development. Can't guarantee stability. 
+
+```
+sudo nixos-rebuild --flake .#desktop switch --impure -p home
+```
+
+Useful to debug home manager
+```
+journalctl -u home-manager-salgadev.service -n 100 --no-pager
 ```

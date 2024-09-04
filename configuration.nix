@@ -8,7 +8,7 @@
 }: {
   imports = [
     ./hardware-configuration.nix # must have
-     <home-manager/nixos>
+     # <home-manager/nixos>
   ];
 
   # Prevent dual-boot to mess with clock
@@ -275,41 +275,6 @@
     extraGroups = ["networkmanager" "wheel" "kvm" "input" "disk" "libvirtd" "storage" "video"];
   };
 
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-  home-manager.backupFileExtension = "backup";
-  home-manager.users.salgadev = {pkgs, ...}:{    
-    nixpkgs.config.allowUnfreePredicate = (_: true); 
-    home.packages = with pkgs; [
-      wget
-      autojump
-      git
-      gh # github login
-      
-      tldr      
-      obs-studio # screen recording
-      krusader # find duplicate files and more
-      #betterbird # email
-      joplin-desktop # notetaking gui      
-      apostrophe # Markdown editor
-      freeoffice
-      rclone
-      rclone-browser
-      brave # private web browsing
-      ungoogled-chromium # for compatibility
-      floorp 
-      oculante
-      imv
-      mpv
-      oterm
-      alpaca
-      gpt4all      
-    ];
-    programs.bash.enable = true;
-
-    home.stateVersion = "24.05";
-  };
-
   # Required for flatpaks
   fonts.fontDir.enable = true;
 
@@ -348,6 +313,10 @@
     };
     
     systemPackages = with pkgs; [
+      git
+      gh
+      wget
+      autojump
       config.nur.repos.nltch.spotify-adblock
       distrobox
 
@@ -439,17 +408,17 @@
       ncpamixer
             
       # GTK themes
-      gtk-engine-murrine
+      # gtk-engine-murrine
       # catppuccin-gtk
-      magnetic-catppuccin-gtk
-      rose-pine-gtk-theme
-      config.nur.repos.ataraxiasjel.rosepine-gtk-icons
+      # magnetic-catppuccin-gtk
+      # rose-pine-gtk-theme
+      # config.nur.repos.ataraxiasjel.rosepine-gtk-icons
 
       # Icons
-      colloid-icon-theme
-      rose-pine-icon-theme # last update 2022
-      kora-icon-theme
-      reversal-icon-theme
+      #colloid-icon-theme
+      #rose-pine-icon-theme # lastL update 2022
+      #kora-icon-theme
+      #reversal-icon-theme
 
       chntpw # fix windows registrt util
 

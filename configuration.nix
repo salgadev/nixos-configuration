@@ -100,7 +100,7 @@
     };    
 
     fonts.sizes = {
-      terminal = 16;
+      terminal = 14;
     };
 
     targets = {
@@ -184,7 +184,7 @@
   xdg.portal = {
     enable = true;
     wlr.enable = true;
-    # extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
+    extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
   };
 
   # sound.enable = true;
@@ -333,14 +333,11 @@
       alsa-utils # volume control
       tdrop            
       waybar
-      rofi-wayland
-      # mako
+      rofi-wayland      
       fnott
       xdg-utils
       hyprpicker
       wf-recorder
-      # polkit-kde-agent
-      # polkit_gnome
       libnotify
       kitty
       networkmanagerapplet
@@ -351,15 +348,12 @@
       wl-clipboard
 
       # screenlock
-      # swaylock-effects
+      # swaylock-effects # broken
       swaylock
       wlogout
       swayidle
-
-      # audio/media commands
-      # pulseaudio
-      pavucontrol
-      # pamixer
+            
+      pavucontrol # audio/media commands
 
       # bluetooth
       bluez

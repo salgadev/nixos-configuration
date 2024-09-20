@@ -1,6 +1,8 @@
-{ username, host, pkgs, ... }:
+{ config, inputs, username, host, pkgs, ... }:
 
 {
+  imports = [ inputs.ags.homeManagerModules.default ];
+
   # config.allowUnfreePredicate = (_: true); 
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -53,13 +55,25 @@
     alpaca
     gpt4all    
   ];
-
-  gtk = {    
-    iconTheme = {
-      # name = "Papirus-Dark";
-      name = "Colloid-dark";
-      # package = pkgs.papirus-icon-theme;
-      package = pkgs.colloid-icon-theme;
+  
+  stylix = {
+    enable = true;
+    autoEnable = true;
+    targets = {
+      swaylock = {
+        enable = true;
+      };
+    };
+  };
+  gtk = {
+    enable = true;
+    iconTheme = {            
+      # this works starts
+      name = "Zafiro-icons-Dark";
+      package = pkgs.zafiro-icons;     
+      # this works ends
+      # name = "kora";
+      # package = pkgs.kora-icon-theme;     
     };
     gtk3.extraConfig = {
       gtk-application-prefer-dark-theme = 1;
@@ -68,13 +82,154 @@
       gtk-application-prefer-dark-theme = 1;
     };
   };
-  qt = {
-    enable = true;
-    style.name = "adwaita-dark";
-    platformTheme.name = "gtk3";
+  #qt = {
+  #  enable = true;
+  #  style.name = "adwaita-dark";
+  #  # platformTheme.name = "gtk3";
+  #};
+
+  xdg.desktopEntries = {
+    whatsappium = {
+      name = "WhatsAppium";
+      icon = "whatsapp";
+      comment = "Launch WhatsApp Web in Chromium";    
+      exec = "chromium --app=https://web.whatsapp.com/ --force-dark-mode --enable-features=WebUIDarkMode %U";
+      terminal = false;
+      categories = [ "Application" "Network" "WebBrowser" ];
+    };
   };
 
-  programs.bash.enable = true;
+
+  services = {
+    avizo = {
+      enable = true;
+      settings = {
+        default = {
+          time = 1.0;
+          y-offset = 0.5;
+          fade-in = 0.1;
+          fade-out = 0.2;
+          padding = 10;
+        };        
+      };
+
+      };
+    fnott = {
+      enable = true;
+      settings = {
+        main = {          
+          # output=<undefined>#          
+          # max-width=0
+          # max-height=0          
+          anchor = "top-right";
+          stacking-order = "top-down";
+          min-width = 400;
+          title-font = "Inter" + ":size=11";
+          summary-font = "Inter" + ":size=10";
+          # title-color=ffffffff
+          # title-format=<i>%a%A</i>          
+          body-font = "Inter" + ":size=10";
+          border-size = 0;          
+          # edge-margin-vertical=10
+          # edge-margin-horizontal=10
+          # notification-margin=10          
+          icon-theme=config.gtk.iconTheme.name;
+          # max-icon-size=32
+          selection-helper="rofi";
+          # selection-helper-uses-null-separator=no
+          # play-sound=aplay ${filename}
+
+          # Default values, may be overridden in 'urgency' specific sections
+          # layer=top
+          # background=3f5f3fff
+
+          # border-color=909090ff
+          # border-radius=0
+          # border-size=1
+
+          # padding-vertical=20
+          # padding-horizontal=20
+
+          # dpi-aware=no        
+
+          # summary-font=sans serif
+          # summary-color=ffffffff
+          # summary-format=<b>%s</b>\n
+
+          # body-font=sans serif
+          # body-color=ffffffff
+          # body-format=%b
+
+          # progress-bar-height=20
+          # progress-bar-color=ffffffff
+
+          # sound-file=
+          # icon=
+
+          # Timeout values are in seconds. 0 to disable
+          # max-timeout=0
+          # default-timeout=0
+          # idle-timeout=0
+
+        };
+        low = {
+          background = config.lib.stylix.colors.base00 + "e6";
+          title-color = config.lib.stylix.colors.base05 + "ff";
+          summary-color = config.lib.stylix.colors.base05 + "ff";
+          body-color = config.lib.stylix.colors.base05 + "ff";
+          idle-timeout = 150;
+          max-timeout = 30;
+          default-timeout = 8;
+        };
+        normal = {
+          background = config.lib.stylix.colors.base00 + "e6";
+          title-color = config.lib.stylix.colors.base07 + "ff";
+          summary-color = config.lib.stylix.colors.base07 + "ff";
+          body-color = config.lib.stylix.colors.base07 + "ff";
+          idle-timeout = 150;
+          max-timeout = 30;
+          default-timeout = 8;
+        };
+        critical = {
+          background = config.lib.stylix.colors.base00 + "e6";
+          title-color = config.lib.stylix.colors.base08 + "ff";
+          summary-color = config.lib.stylix.colors.base08 + "ff";
+          body-color = config.lib.stylix.colors.base08 + "ff";
+          idle-timeout = 0;
+          max-timeout = 0;
+          default-timeout = 0;
+        };    
+      };
+    };    
+  };
+
+  programs = {
+    bash.enable = true;
+    foot = {
+      enable = true;
+      server.enable = true;
+    };
+    kitty.enable = true;
+    joplin-desktop.enable = true;
+
+    swaylock = {
+      enable = true;
+      # settings = {};
+    };
+
+    ags = {
+      enable = true;
+      # null or path, leave as null if you don't want hm to manage the config
+      configDir = ../../ags;
+
+      # additional packages to add to gjs's runtime
+      extraPackages = with pkgs; [
+        gtksourceview
+        webkitgtk
+        accountsservice
+      ];
+    };
+  };
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.

@@ -346,10 +346,7 @@
       grim
       cliphist
       wl-clipboard
-
-      # screenlock
-      # swaylock-effects # broken
-      swaylock
+      
       wlogout
       swayidle
             

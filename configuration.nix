@@ -302,6 +302,8 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget  
   environment = {
+    pathsToLink = [ "/share/xdg-desktop-portal" "/share/applications" ];
+
     shellInit = "pfetch"; # flex  
     # Flatpak shortcuts
     shellAliases = {

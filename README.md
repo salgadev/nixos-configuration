@@ -21,7 +21,7 @@ nix flake update && sudo nixos-rebuild --flake .#desktop switch --impure -p unst
 Still under heavy development. Can't guarantee stability. 
 
 ```
-sudo nixos-rebuild --flake .#desktop switch --impure -p home
+sudo nixos-rebuild --flake .#desktop switch -p home
 ```
 
 Useful to debug home manager

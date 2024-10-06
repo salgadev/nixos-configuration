@@ -88,17 +88,26 @@
   #  # platformTheme.name = "gtk3";
   #};
 
-  xdg.desktopEntries = {
-    whatsappium = {
-      name = "WhatsAppium";
-      icon = "whatsapp";
-      comment = "Launch WhatsApp Web in Chromium";    
-      exec = "chromium --app=https://web.whatsapp.com/ --force-dark-mode --enable-features=WebUIDarkMode %U";
-      terminal = false;
-      categories = [ "Application" "Network" "WebBrowser" ];
+  # This custom desktop entry doesn't seem to work
+  #xdg.desktopEntries = {
+  #  whatsappium = {
+  #    name = "WhatsAppium";
+  #    icon = "whatsapp";
+  #    comment = "Launch WhatsApp Web in Chromium";    
+  #    exec = "chromium --app=https://web.whatsapp.com/ --force-dark-mode --enable-features=WebUIDarkMode %U";
+  #    terminal = false;
+  #    categories = [ "Application" "Network" "WebBrowser" ];
+  #  };
+  #};
+  xdg = {
+    portal = {
+      enable = true;      
+      extraPortals = with pkgs; [         
+        xdg-desktop-portal-wlr
+        xdg-desktop-portal
+      ];
     };
   };
-
 
   services = {
     avizo = {

@@ -47,13 +47,16 @@
     rclone-browser
     brave # private web browsing
     ungoogled-chromium # for compatibility
+    zoom-us
     floorp 
     oculante
     imv
     mpv
     oterm
     alpaca
-    gpt4all    
+    # gpt4all    # broken as of Oct 2024
+    slurp
+    grim
   ];
   
   stylix = {
@@ -98,7 +101,9 @@
   #    terminal = false;
   #    categories = [ "Application" "Network" "WebBrowser" ];
   #  };
-  #};
+  #};  
+  /*
+  # this is already covered in configuration.nix
   xdg = {
     portal = {
       enable = true;      
@@ -108,7 +113,7 @@
       ];
     };
   };
-
+  */
   services = {
     avizo = {
       enable = true;
@@ -243,7 +248,13 @@
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
-  home.file = {
+  xdg.configFile."xdg-desktop-portal-wlr/config".text = ''
+    [screencast]
+    output_name=DP-1
+    max_fps=30
+    chooser_cmd=slurp -f %o -or
+    chooser_type=simple
+  '';
     # # Building this configuration will create a copy of 'dotfiles/screenrc' in
     # # the Nix store. Activating the configuration will then make '~/.screenrc' a
     # # symlink to the Nix store copy.
@@ -254,8 +265,7 @@
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
-  };
-
+  
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a
   # shell provided by Home Manager. If you don't want to manage your shell

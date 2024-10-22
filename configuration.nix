@@ -86,7 +86,7 @@
   stylix = {
     enable = true;    
     base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
-    # polarity = "dark"; # breaks base16Scheme for some reason
+    polarity = "dark"; # breaks base16Scheme for some reason
     image = /usr/share/backgrounds/lpz/LaPazAtardecer.jpg;    
 
     homeManagerIntegration.autoImport = true;
@@ -182,10 +182,21 @@
 
   # enable desktop portal
   xdg.portal = {
+    wlr.enable = true;
+    extraPortals = with pkgs; [ 
+      xdg-desktop-portal
+      kdePackages.xdg-desktop-portal-kde
+      # kdePackages.xdg-desktop-portal-kde # didn't work
+      ];
+    };
+  /* 
+  # Should be all covered by the previous line
+  xdg.portal = {
     enable = true;
     wlr.enable = true;
     extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
   };
+  */
 
   # sound.enable = true;
   security.rtkit.enable = true;
@@ -227,7 +238,7 @@
       enable = true;
       # enable32Bit = true; unstable option
       extraPackages = with pkgs; [
-        rocmPackages.clr.icd # broken in unstable
+        rocmPackages.clr.icd
         amdvlk # Use AMD Vulkan drivers as needed        
         ];
       extraPackages32 = with pkgs; [
@@ -310,8 +321,9 @@
       shotcut = "org.shotcut.Shotcut"; # outdated in nixpkgs
     };
     sessionVariables = {
-      # Helps Chromium and Electron apps
+      # Helps Chromium and Electron apps work with Wayland
       NIXOS_OZONE_WL = "1";
+      XDG_CURRENT_DESKTOP = "sway";
     };
     
     systemPackages = with pkgs; [
@@ -343,10 +355,8 @@
       libnotify
       kitty
       networkmanagerapplet
-      jq 
-      slurp
-      grim
-      cliphist
+      jq       
+      # cliphist
       wl-clipboard
       
       wlogout
@@ -501,7 +511,7 @@
   #   enableSSHSupport = true;
   # };
 
-  programs = {    
+  programs = {
     # Window managers
     wayfire = {
       enable = true;
@@ -516,6 +526,14 @@
     dconf.enable = true;
     virt-manager.enable = true;
     nix-ld.enable = true; # Helps VSCodium
+
+    thunar = {
+      enable = true;      
+      plugins = with pkgs.xfce; [ 
+        thunar-archive-plugin 
+        thunar-volman 
+      ];
+    };
   };
 
   # List services that you want to enable:

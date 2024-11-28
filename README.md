@@ -1,30 +1,25 @@
 # nixos-configuration
 
-My NixOS configuration file. Trying out flakes. 
+My desktop NixOS configuration. Trying flakes and home manager. 
 
-# Rebuild using this configuration
+# System Rebuild 
 
-If you want to ignore the flake and rebuild monolithically: 
-
+## Rebuild monolithically (ignoring flake) 
 ```
 sudo nixos-rebuild switch -I nixos-config=./configuration.nix
 ```
 
-Rebuild using the new flake (Recommended)
+## Rebuild using flake (Recommended)
 
 ```
-nix flake update && sudo nixos-rebuild --flake .#desktop switch --impure -p unstable
+nix flake update 
 
-```
-
-## Nightly Home Manager version
-Still under heavy development. Can't guarantee stability. 
-
-```
 sudo nixos-rebuild --flake .#desktop switch -p home --impure
 ```
 
-Useful to debug home manager
+## Other notes and commands
+
+### Run to debug home manager
 ```
 journalctl -u home-manager-salgadev.service -n 100 --no-pager
 ```

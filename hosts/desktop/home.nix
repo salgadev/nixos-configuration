@@ -3,7 +3,7 @@
 {
   imports = [ inputs.ags.homeManagerModules.default ];
 
-  # config.allowUnfreePredicate = (_: true); 
+  # config.allowUnfreePredicate = (_: true);
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "${username}";
@@ -36,11 +36,11 @@
     # # environment:
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
-    # '')        
+    # '')
     obs-studio # screen recording
     krusader # find duplicate files and more
     #betterbird # email
-    joplin-desktop # notetaking gui      
+    joplin-desktop # notetaking gui
     apostrophe # Markdown editor
     freeoffice
     rclone
@@ -48,7 +48,7 @@
     brave # private web browsing
     ungoogled-chromium # for compatibility
     zoom-us
-    floorp 
+    floorp
     oculante
     imv
     mpv
@@ -58,7 +58,7 @@
     slurp
     grim
   ];
-  
+
   stylix = {
     enable = true;
     autoEnable = true;
@@ -70,13 +70,13 @@
   };
   gtk = {
     enable = true;
-    iconTheme = {            
+    iconTheme = {
       # this works starts
       name = "Zafiro-icons-Dark";
-      package = pkgs.zafiro-icons;     
+      package = pkgs.zafiro-icons;
       # this works ends
       # name = "kora";
-      # package = pkgs.kora-icon-theme;     
+      # package = pkgs.kora-icon-theme;
     };
     gtk3.extraConfig = {
       gtk-application-prefer-dark-theme = 1;
@@ -96,18 +96,18 @@
   #  whatsappium = {
   #    name = "WhatsAppium";
   #    icon = "whatsapp";
-  #    comment = "Launch WhatsApp Web in Chromium";    
+  #    comment = "Launch WhatsApp Web in Chromium";
   #    exec = "chromium --app=https://web.whatsapp.com/ --force-dark-mode --enable-features=WebUIDarkMode %U";
   #    terminal = false;
   #    categories = [ "Application" "Network" "WebBrowser" ];
   #  };
-  #};  
+  #};
   /*
   # this is already covered in configuration.nix
   xdg = {
     portal = {
-      enable = true;      
-      extraPortals = with pkgs; [         
+      enable = true;
+      extraPortals = with pkgs; [
         xdg-desktop-portal-wlr
         xdg-desktop-portal
       ];
@@ -124,29 +124,29 @@
           fade-in = 0.1;
           fade-out = 0.2;
           padding = 10;
-        };        
+        };
       };
 
       };
     fnott = {
       enable = true;
       settings = {
-        main = {          
-          # output=<undefined>#          
+        main = {
+          # output=<undefined>#
           # max-width=0
-          # max-height=0          
+          # max-height=0
           anchor = "top-right";
           stacking-order = "top-down";
           min-width = 400;
           title-font = "Inter" + ":size=11";
           summary-font = "Inter" + ":size=10";
           # title-color=ffffffff
-          # title-format=<i>%a%A</i>          
+          # title-format=<i>%a%A</i>
           body-font = "Inter" + ":size=10";
-          border-size = 0;          
+          border-size = 0;
           # edge-margin-vertical=10
           # edge-margin-horizontal=10
-          # notification-margin=10          
+          # notification-margin=10
           icon-theme=config.gtk.iconTheme.name;
           # max-icon-size=32
           selection-helper="rofi";
@@ -164,7 +164,7 @@
           # padding-vertical=20
           # padding-horizontal=20
 
-          # dpi-aware=no        
+          # dpi-aware=no
 
           # summary-font=sans serif
           # summary-color=ffffffff
@@ -212,9 +212,9 @@
           idle-timeout = 0;
           max-timeout = 0;
           default-timeout = 0;
-        };    
+        };
       };
-    };    
+    };
   };
 
   programs = {
@@ -231,7 +231,45 @@
       package = pkgs.swaylock-effects;
       # settings = {};
     };
-
+    zed-editor = {
+      enable = true;
+      extraPackages = [
+        pkgs.nixd
+        pkgs.python312Packages.python-lsp-server
+        ];
+      extensions = [
+        "ruff"
+        "nix"
+        "rose-pine-theme"
+        "docker-compose"
+        "dockerfile"
+        "pylsp"
+        "python-refactoring"
+        ];
+      userSettings = {
+        assistant = {
+          enabled = true;
+          version = "2";
+          default_model = {
+            provider = "zed.dev";
+            model = "claude-3-5-sonnet-latest";
+            };
+          };
+        autosave = "on_focus_change";
+        auto_update = false;
+        theme = "Rosé Pine Moon";
+        features = {
+          inline_completion_provider = "supermaven";
+        };
+        telemetry = {
+          metrics = false;
+        };
+        vim_mode = false;
+        ui_font_size = 18;
+        buffer_font_size = 16;
+      };
+    };
+    /* # not tinkering with ags atm
     ags = {
       enable = true;
       # null or path, leave as null if you don't want hm to manage the config
@@ -244,6 +282,7 @@
         accountsservice
       ];
     };
+    */
   };
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -265,7 +304,7 @@
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
-  
+
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a
   # shell provided by Home Manager. If you don't want to manage your shell

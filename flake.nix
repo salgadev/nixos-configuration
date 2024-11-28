@@ -3,21 +3,22 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     stylix.url = "github:danth/stylix";
-    nur.url = github:nix-community/NUR;
+    nur.url = "github:nix-community/NUR";
     ags.url = "github:Aylur/ags";
   };
 
-  outputs = { nixpkgs, stylix, nur, home-manager, ... }@inputs:
+  outputs = { nixpkgs, nixpkgs-stable, stylix, nur, home-manager, ... }@inputs:
     let
       system = "aarch64-linux";
       host = "desktop";
       username = "salgadev";
     in
     {
-      nixosConfigurations = {        
+      nixosConfigurations = {
         "${host}" = nixpkgs.lib.nixosSystem {
           specialArgs = {
       	    inherit system;
@@ -39,7 +40,7 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.backupFileExtension = "backup";
-              home-manager.users.${username} = import ./hosts/${host}/home.nix;             
+              home-manager.users.${username} = import ./hosts/${host}/home.nix;
             }
           ];
         };

@@ -4,8 +4,17 @@
 {
   config,
   pkgs,
+  inputs,
   ...
-}: {
+}:
+let
+  # Add this at the top of your configuration.nix
+  pkgs-stable = import inputs.nixpkgs-stable {
+    system = pkgs.system;
+    config.allowUnfree = true;
+  };
+in
+{
   imports = [
     ./hardware-configuration.nix # must have
      # <home-manager/nixos>
@@ -13,18 +22,18 @@
 
   # Prevent dual-boot to mess with clock
   time.hardwareClockInLocalTime = true;
-  
+
   # Use latest LTS kernel
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
-    
+
     # CPU scaling driver
     kernelModules = ["amd-pstate"];
     kernelParams = ["amd_pstate=active"];
-    
+
     # enable correct drivers for Vega 56 (Vega 10)
     initrd.kernelModules = ["amdgpu"];
-    
+
     # Enable mounting shared ntfs partitions
     supportedFilesystems = ["ntfs" "fat32" "ext4" "exfat" "btrfs"];
 
@@ -42,8 +51,8 @@
         efiSysMountPoint = "/boot/efi";
       };
     };
-  };  
-  
+  };
+
   # Mount shared HDD
   fileSystems."/mnt/data" = {
     device = "/dev/sda2";
@@ -84,20 +93,20 @@
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
   stylix = {
-    enable = true;    
+    enable = true;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
     polarity = "dark"; # breaks base16Scheme for some reason
-    image = /usr/share/backgrounds/lpz/LaPazAtardecer.jpg;    
+    image = /usr/share/backgrounds/lpz/LaPazAtardecer.jpg;
 
     homeManagerIntegration.autoImport = true;
     autoEnable = true;
     opacity.terminal = 0.9;
-        
+
     cursor  = {
       package = pkgs.rose-pine-cursor;
       name = "BreezeX-RosePineDawn-Linux";
       size = 32;
-    };    
+    };
 
     fonts.sizes = {
       terminal = 14;
@@ -107,38 +116,38 @@
       grub.enable = true;
       gnome.enable = true;
       gtk.enable = true;
-    };    
+    };
   };
 
   services = {
     ollama = {
       enable = true;
       acceleration = "rocm";
-    };    
+    };
 
     openvpn.servers = {
       tryhackme = {
         config = "config /home/salgadev/code/tryhackme/salgadev.ovpn";
-        autoStart = false;        
+        autoStart = false;
       };
-    };  
+    };
 
-    xserver = {      
-      enable = true;      
+    xserver = {
+      enable = true;
     };
 
     displayManager.sddm = {
       enable = true;
       wayland.enable = true;
-      theme = "catppuccin-sddm-corners";      
-    };              
-    
-    gnome = {      
+      theme = "catppuccin-sddm-corners";
+    };
+
+    gnome = {
       gnome-keyring.enable = true; # for WiFi
       glib-networking.enable = true;
       at-spi2-core.enable = true;
     };
-    
+
     mpd = {
       enable = true;
       musicDirectory = "/home/salgadev/Music";
@@ -183,13 +192,13 @@
   # enable desktop portal
   xdg.portal = {
     wlr.enable = true;
-    extraPortals = with pkgs; [ 
+    extraPortals = with pkgs; [
       xdg-desktop-portal
       kdePackages.xdg-desktop-portal-kde
       # kdePackages.xdg-desktop-portal-kde # didn't work
       ];
     };
-  /* 
+  /*
   # Should be all covered by the previous line
   xdg.portal = {
     enable = true;
@@ -234,17 +243,17 @@
   };
 
   hardware = {
-    graphics = {     
+    graphics = {
       enable = true;
       # enable32Bit = true; unstable option
       extraPackages = with pkgs; [
         rocmPackages.clr.icd
-        amdvlk # Use AMD Vulkan drivers as needed        
+        amdvlk # Use AMD Vulkan drivers as needed
         ];
       extraPackages32 = with pkgs; [
         driversi686Linux.amdvlk
         ];
-    };    
+    };
     bluetooth.enable = true;
   };
 
@@ -271,7 +280,7 @@
       # Enable the NUR
       nur = import (builtins.fetchTarball {
         url = "https://github.com/nix-community/NUR/archive/3a6a6f4da737da41e27922ce2cfacf68a109ebce.tar.gz";
-        sha256 = "04387gzgl8y555b3lkz9aiw9xsldfg4zmzp930m62qw8zbrvrshd"; 
+        sha256 = "04387gzgl8y555b3lkz9aiw9xsldfg4zmzp930m62qw8zbrvrshd";
       }) {
         inherit pkgs;
       };
@@ -290,9 +299,6 @@
   fonts.fontDir.enable = true;
 
   fonts.packages = with pkgs; [
-    noto-fonts
-    noto-fonts-cjk
-    noto-fonts-emoji
     liberation_ttf
     fira-code
     fira-code-symbols
@@ -308,14 +314,14 @@
     zafiro-icons
     merriweather
     merriweather-sans
-  ]; 
+  ];
 
   # List packages installed in system profile. To search, run:
-  # $ nix search wget  
+  # $ nix search wget
   environment = {
     pathsToLink = [ "/share/xdg-desktop-portal" "/share/applications" ];
 
-    shellInit = "pfetch"; # flex  
+    shellInit = "pfetch"; # flex
     # Flatpak shortcuts
     shellAliases = {
       shotcut = "org.shotcut.Shotcut"; # outdated in nixpkgs
@@ -325,14 +331,18 @@
       NIXOS_OZONE_WL = "1";
       XDG_CURRENT_DESKTOP = "sway";
     };
-    
+
     systemPackages = with pkgs; [
+      uv
       git
       gh
       wget
       autojump
       config.nur.repos.nltch.spotify-adblock
       distrobox
+      ventoy-full
+      bottles
+      #mission-center #broken
 
       # sddm
       catppuccin-sddm-corners
@@ -345,9 +355,9 @@
       foot
       clipse
       alsa-utils # volume control
-      tdrop            
+      tdrop
       waybar
-      rofi-wayland      
+      rofi-wayland
       fnott
       xdg-utils
       hyprpicker
@@ -355,13 +365,13 @@
       libnotify
       kitty
       networkmanagerapplet
-      jq       
+      jq
       # cliphist
       wl-clipboard
-      
+
       wlogout
       swayidle
-            
+
       pavucontrol # audio/media commands
 
       # bluetooth
@@ -385,7 +395,6 @@
 
       playerctl # media
       wavpack # play wavs
-      fontconfig # helps flatpaks
       baobab # storage visualizer
 
       mate.atril # document viewers
@@ -398,18 +407,18 @@
 
       # podman
       dive            # look into docker image layers
-      podman-tui      # status of containers in the terminal    
+      podman-tui      # status of containers in the terminal
       podman-compose  # start group of containers for dev
 
       rar
       alejandra
-      
+
       # Theming
       gnome-tweaks
       glib
       themechanger
       ncpamixer
-            
+
       # GTK themes
       # gtk-engine-murrine
       # catppuccin-gtk
@@ -426,7 +435,8 @@
       chntpw # fix windows registrt util
 
       (vscode-with-extensions.override {
-        vscode = vscodium;
+        vscode = pkgs-stable.vscodium;
+        # vscode = vscodium; # broken in unstable
         vscodeExtensions = with vscode-extensions;
           [
             # theming
@@ -474,13 +484,13 @@
               publisher = "ms-python";
               version = "2024.5.11021008";
               sha256 = "52723495e44aa82b452c17464bf52f2ee09cc508626f26340a19b343dbb2b686";
-            }                    
+            }
           ];
       })
     ];
-  };  
+  };
 
-  # Seems broken July 2024 
+  # Seems broken July 2024
   # Add HIP support
   systemd.tmpfiles.rules = [
     "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.rocmPackages.clr}"
@@ -521,17 +531,17 @@
         wayfire-plugins-extra
       ];
     };
-    xwayland.enable = true;    
+    xwayland.enable = true;
     direnv.enable = true;
     dconf.enable = true;
     virt-manager.enable = true;
     nix-ld.enable = true; # Helps VSCodium
-
+    file-roller.enable = true;
     thunar = {
-      enable = true;      
-      plugins = with pkgs.xfce; [ 
-        thunar-archive-plugin 
-        thunar-volman 
+      enable = true;
+      plugins = with pkgs.xfce; [
+        thunar-archive-plugin
+        thunar-volman
       ];
     };
   };

@@ -57,6 +57,8 @@
     # gpt4all    # broken as of Oct 2024
     slurp
     grim
+    logseq
+    anytype
   ];
 
   stylix = {

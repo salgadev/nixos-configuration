@@ -285,6 +285,10 @@ in
         inherit pkgs;
       };
     };
+    # exception for logseq
+    permittedInsecurePackages = [
+      "electron-27.3.11"
+    ];
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -542,6 +546,7 @@ in
       plugins = with pkgs.xfce; [
         thunar-archive-plugin
         thunar-volman
+        thunar-dropbox-plugin
       ];
     };
   };

@@ -28,7 +28,7 @@
           };
           modules = [
             ./configuration.nix
-            nur.nixosModules.nur
+            nur.modules.nixos.default
             inputs.stylix.nixosModules.stylix
             home-manager.nixosModules.home-manager
             {

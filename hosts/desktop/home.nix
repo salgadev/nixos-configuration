@@ -43,6 +43,7 @@
     joplin-desktop # notetaking gui
     apostrophe # Markdown editor
     freeoffice
+    wpsoffice
     rclone
     rclone-browser
     brave # private web browsing
@@ -59,6 +60,9 @@
     grim
     logseq
     anytype
+    muffon
+    nuclear
+    shotcut
   ];
 
   stylix = {
@@ -259,32 +263,25 @@
           };
         autosave = "on_focus_change";
         auto_update = false;
-        theme = "Rosé Pine Moon";
+        
         features = {
           inline_completion_provider = "supermaven";
         };
         telemetry = {
           metrics = false;
         };
-        vim_mode = false;
-        ui_font_size = 18;
-        buffer_font_size = 16;
+        vim_mode = false;        
       };
     };
-    /* # not tinkering with ags atm
-    ags = {
+    freetube = {
       enable = true;
-      # null or path, leave as null if you don't want hm to manage the config
-      configDir = ../../ags;
-
-      # additional packages to add to gjs's runtime
-      extraPackages = with pkgs; [
-        gtksourceview
-        webkitgtk
-        accountsservice
-      ];
-    };
-    */
+      settings = {
+        allowDashAv1Formats = true;
+        checkForUpdates     = false;
+        defaultQuality      = "1080";
+        # baseTheme           = "catppuccinMocha"; # try out first
+      };
+    };    
   };
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage

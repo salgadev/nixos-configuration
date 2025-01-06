@@ -125,6 +125,12 @@ in
       acceleration = "rocm";
     };
 
+    pulseaudio = {
+      enable = false;
+      package = pkgs.pulseaudioFull;
+      extraConfig = "load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1";
+    };
+
     openvpn.servers = {
       tryhackme = {
         config = "config /home/salgadev/code/tryhackme/salgadev.ovpn";
@@ -209,13 +215,7 @@ in
 
   # sound.enable = true;
   security.rtkit.enable = true;
-
-  hardware.pulseaudio = {
-    enable = false;
-    package = pkgs.pulseaudioFull;
-    extraConfig = "load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1";
-  };
-
+  
   # enable and configure polkit to automount drives
   security.polkit = {
     enable = true;
@@ -313,7 +313,6 @@ in
     material-design-icons # for neofetch theme
     jetbrains-mono
     victor-mono
-    terminus-nerdfont
     nixos-icons
     zafiro-icons
     merriweather
@@ -342,7 +341,7 @@ in
       gh
       wget
       autojump
-      config.nur.repos.nltch.spotify-adblock
+      nur.repos.nltch.spotify-adblock
       distrobox
       ventoy-full
       bottles
@@ -436,7 +435,7 @@ in
       #kora-icon-theme
       #reversal-icon-theme
 
-      chntpw # fix windows registrt util
+      # chntpw # fix windows registrt util broken as of 25.05
 
       (vscode-with-extensions.override {
         vscode = pkgs-stable.vscodium;
